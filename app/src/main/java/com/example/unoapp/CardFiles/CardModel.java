@@ -13,14 +13,25 @@ public class CardModel {
     public static final String TYPE_COLOR_SWITCH = "type_color_switch";
     public static final String TYPE_PLUS_FOUR = "type_plus_four";
 
+    public static final String NUMBER_ZERO = "0";
+    public static final String NUMBER_ONE = "1";
+    public static final String NUMBER_TWO = "2";
+    public static final String NUMBER_THREE = "3";
+    public static final String NUMBER_FOUR = "4";
+    public static final String NUMBER_FIVE = "5";
+    public static final String NUMBER_SIX = "6";
+    public static final String NUMBER_SEVEN = "7";
+    public static final String NUMBER_EIGHT = "8";
+    public static final String NUMBER_NINE = "9";
+
     private String color;
-    private int number;
+    private String number;
     private String type;
 
     public CardModel() {
     }
 
-    public CardModel(String color, int number, String type) {
+    public CardModel(String color, String number, String type) {
         this.color = color;
         this.number = number;
         this.type = type;
@@ -39,7 +50,7 @@ public class CardModel {
         this.color = color;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -51,7 +62,7 @@ public class CardModel {
         return color;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 

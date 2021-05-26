@@ -1,38 +1,43 @@
 package com.example.unoapp.CardFiles;
 
+import android.util.Log;
+
 import java.util.Collections;
 import java.util.Stack;
 
 // TODO: 25/05/2021 Maybe not static for other games? Explore this. Perhaps add a clear deck to fix? 
-public class Deck {
-    private static Deck instance;
+// TODO: 25/05/2021 Using p2p, sync two players deck cards? 
+public class AllCards {
+    private static final String TAG = "Deck";
+    private static AllCards instance;
     private static Stack<CardModel> cardsDeck;
+    private static Stack<CardModel> placedCards;
 
-    private Deck() {
+    private AllCards() {
         initCards();
     }
 
-    public static Deck getInstance() {
+    public static AllCards getInstance() {
         if (null == instance) {
-            instance = new Deck();
+            instance = new AllCards();
         }
         return instance;
     }
 
-    // TODO: 25/05/2021 ensure all cards are accounted 4 
     private void initCards() {
         cardsDeck = new Stack<>();
 
         for (int i = 0; i <=9; i++) {
-            cardsDeck.push(new CardModel(CardModel.COLOR_GREEN, i, CardModel.TYPE_NUMBER));
-            cardsDeck.push(new CardModel(CardModel.COLOR_RED, i, CardModel.TYPE_NUMBER));
-            cardsDeck.push(new CardModel(CardModel.COLOR_YELLOW, i, CardModel.TYPE_NUMBER));
-            cardsDeck.push(new CardModel(CardModel.COLOR_BLUE, i, CardModel.TYPE_NUMBER));
+            String str_i = String.valueOf(i);
+            cardsDeck.push(new CardModel(CardModel.COLOR_GREEN, str_i, CardModel.TYPE_NUMBER));
+            cardsDeck.push(new CardModel(CardModel.COLOR_RED, str_i, CardModel.TYPE_NUMBER));
+            cardsDeck.push(new CardModel(CardModel.COLOR_YELLOW, str_i, CardModel.TYPE_NUMBER));
+            cardsDeck.push(new CardModel(CardModel.COLOR_BLUE, str_i, CardModel.TYPE_NUMBER));
             if (i != 0) {
-                cardsDeck.push(new CardModel(CardModel.COLOR_GREEN, i, CardModel.TYPE_NUMBER));
-                cardsDeck.push(new CardModel(CardModel.COLOR_RED, i, CardModel.TYPE_NUMBER));
-                cardsDeck.push(new CardModel(CardModel.COLOR_YELLOW, i, CardModel.TYPE_NUMBER));
-                cardsDeck.push(new CardModel(CardModel.COLOR_BLUE, i, CardModel.TYPE_NUMBER));
+                cardsDeck.push(new CardModel(CardModel.COLOR_GREEN, str_i, CardModel.TYPE_NUMBER));
+                cardsDeck.push(new CardModel(CardModel.COLOR_RED, str_i, CardModel.TYPE_NUMBER));
+                cardsDeck.push(new CardModel(CardModel.COLOR_YELLOW, str_i, CardModel.TYPE_NUMBER));
+                cardsDeck.push(new CardModel(CardModel.COLOR_BLUE, str_i, CardModel.TYPE_NUMBER));
             }
         }
 
@@ -60,24 +65,37 @@ public class Deck {
        shuffleDeck();
     }
 
-    // TODO: 25/05/2021 Handle case when stack is empty
     public CardModel drawCard() {
-        CardModel retrievedCard = cardsDeck.peek();
-        cardsDeck.pop();
-        return retrievedCard;
+        if (cardsDeck.size() == 0) {
+            cardsDeck = placedCards;
+            placedCards = new Stack<>();
+            shuffleDeck();
+        }
+        return cardsDeck.pop();
+    }
+
+    // TODO: 25/05/2021 outside check to ensure it is a legal move
+    public void placeCard(CardModel card) {
+        placedCards.push(card);
     }
 
     public void shuffleDeck() {
         Collections.shuffle(cardsDeck);
     }
 
-    //4 debugging purposes only
+    /*4 debugging purposes only
     public String toString() {
         String b = "";
         for (CardModel c: cardsDeck) {
-            b += " " + c.toString() + "\n\n\n";
+            Log.d(TAG, "toString: " + c.toString());
         }
         return b;
+    }
+
+     */
+
+    public int size() {
+        return cardsDeck.size();
     }
 
 }
