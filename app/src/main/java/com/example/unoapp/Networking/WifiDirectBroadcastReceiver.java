@@ -1,26 +1,26 @@
-package com.example.unoapp;
+package com.example.unoapp.Networking;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
+import com.example.unoapp.MainActivity;
+import com.example.unoapp.Networking.ManagerWrapper;
+
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "WifiDirectBroadcastRece";
-    private WifiP2pManager manager;
-    private WifiP2pManager.Channel channel;
+    private ManagerWrapper managerWrapper;
     private MainActivity activity;
 
     public WifiDirectBroadcastReceiver() {
+
     }
 
-    public WifiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, MainActivity activity) {
+    public WifiDirectBroadcastReceiver(MainActivity activity, ManagerWrapper managerWrapper) {
         super();
-        this.manager = manager;
-        this.channel = channel;
+        this.managerWrapper = managerWrapper;
         this.activity = activity;
     }
 
@@ -43,17 +43,15 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 break;
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
                 // Call WifiP2pManager.requestPeers() to get a list of current peers.
-                if (manager != null) {
-                    manager.requestPeers(channel, activity);
-                }
+                managerWrapper.requestPeers(activity);
                 break;
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
                 // respond to new connections or disconnections/
-                manager.requestConnectionInfo(channel, activity);
+                managerWrapper.requestConnectionInfo(activity);
                 break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
                 // respond to device's wifi state changing.
-                MainActivity.discover(manager, channel);
+                managerWrapper.discover();
                 break;
             default:
                 break;

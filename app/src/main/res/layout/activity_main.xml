@@ -7,6 +7,14 @@
     tools:context=".MainActivity"
     android:id="@+id/parentRelLayout">
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="12345"
+        android:layout_above="@id/waitingRelLayout"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/edtTxtPort"/>
+
 
     <RelativeLayout
         android:layout_width="wrap_content"
