@@ -12,6 +12,7 @@ public class CardModel {
     public static final String TYPE_SKIP = "type_skip";
     public static final String TYPE_COLOR_SWITCH = "type_color_switch";
     public static final String TYPE_PLUS_FOUR = "type_plus_four";
+    public static final String TYPE_BACK = "back_card";
 
     public static final String NUMBER_ZERO = "0";
     public static final String NUMBER_ONE = "1";
@@ -27,6 +28,15 @@ public class CardModel {
     private String color;
     private String number;
     private String type;
+    private boolean playable = false;
+
+    public boolean isPlayable() {
+        return playable;
+    }
+
+    public void setPlayable(boolean playable) {
+        this.playable = playable;
+    }
 
     public CardModel() {
     }

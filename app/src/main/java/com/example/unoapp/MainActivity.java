@@ -23,6 +23,10 @@ import java.util.ArrayList;
 
 // TODO: 26/05/2021 Permissions! 
 public class MainActivity extends AppCompatActivity implements WifiP2pManager.PeerListListener, WifiP2pManager.ConnectionInfoListener, PeerAdapter.RequestConnectionToDevice {
+    public interface onGameStateChange {
+        void beginGame();
+        void endGame();
+    }
     private static final String TAG = "MainActivity";
     private ManagerWrapper managerWrapper;
     private WifiP2pManager manager;
@@ -30,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Pe
     private WifiDirectBroadcastReceiver broadcastReceiver;
     private TextView edtTxtPort;
     private IntentFilter intentFilter;
-    private Button btnRefresh;
+    private Button btnRefresh, btnBegin;
     private RecyclerView recView;
     private PeerAdapter adapter;
 
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Pe
         edtTxtPort = findViewById(R.id.edtTxtPort);
         recView = findViewById(R.id.recView);
         btnRefresh = findViewById(R.id.btnRefresh);
+        btnBegin = findViewById(R.id.btnBegin);
         adapter = new PeerAdapter(this);
 
         recView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Pe
             @Override
             public void onClick(View v) {
                 managerWrapper.discover();
+            }
+        });
+
+        btnBegin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                managerWrapper.begin();
             }
         });
     }

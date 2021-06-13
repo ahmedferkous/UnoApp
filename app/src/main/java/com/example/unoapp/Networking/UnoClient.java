@@ -1,12 +1,15 @@
 package com.example.unoapp.Networking;
 
-import java.net.Socket;
+import com.example.unoapp.CardFiles.CardModel;
 
-public class UnoClients {
+import java.net.Socket;
+import java.util.ArrayList;
+
+public class UnoClient {
     private Socket socket;
     private String nickname;
 
-    public UnoClients(Socket socket, String nickname) {
+    public UnoClient(Socket socket, String nickname) {
         this.socket = socket;
         this.nickname = nickname;
     }
@@ -18,4 +21,6 @@ public class UnoClients {
     public String getNickname() {
         return nickname;
     }
+
+
 }

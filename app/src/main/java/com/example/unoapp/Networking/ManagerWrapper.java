@@ -15,6 +15,7 @@ public class ManagerWrapper {
     private static final String TAG = "ManagerWrapper";
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    private ServerHolder serverHolder;
     private int port;
     private boolean serverExists = false;
 
@@ -75,7 +76,8 @@ public class ManagerWrapper {
             if (info.groupOwnerAddress != null) {
                 if (info.isGroupOwner) {
                     if (!serverExists) {
-                        new Thread(new ServerHolder(port, "humid")).start();
+                        serverHolder = new ServerHolder(port, "humid");
+                        new Thread(serverHolder).start();
                         serverExists = true;
                     }
                 } else {
@@ -85,6 +87,11 @@ public class ManagerWrapper {
         } else {
             Log.d(TAG, "onConnectionInfoAvailable: Nulled");
         }
+    }
+
+    //temp solution for debugging purposes only
+    public void begin() {
+        serverHolder.beginGame();
     }
 
     public void requestPeers(MainActivity activity) {

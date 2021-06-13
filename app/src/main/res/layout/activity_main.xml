@@ -10,7 +10,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="12345"
+        android:text="7775"
         android:layout_above="@id/waitingRelLayout"
         android:layout_centerHorizontal="true"
         android:id="@+id/edtTxtPort"/>
@@ -46,6 +46,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
         android:text="Refresh"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnBegin"
+        android:text="Begin"
+        android:layout_below="@id/btnRefresh"
+        android:layout_centerHorizontal="true"/>
 
 
 
