@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Pe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        managerWrapper.stopDiscovery();
         managerWrapper.disconnectFromGroup();
     }
 }

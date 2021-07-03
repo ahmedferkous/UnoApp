@@ -1,5 +1,6 @@
 package com.example.unoapp.Networking;
 
+import android.annotation.SuppressLint;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -16,8 +17,8 @@ public class ManagerWrapper {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private ServerHolder serverHolder;
-    private int port;
     private boolean serverExists = false;
+    private int port;
 
     public ManagerWrapper(WifiP2pManager manager, WifiP2pManager.Channel channel) {
         this.manager = manager;
@@ -28,6 +29,7 @@ public class ManagerWrapper {
         this.port = port;
     }
 
+    @SuppressLint("MissingPermission")
     public void discover() {
         stopDiscovery();
 
@@ -47,7 +49,7 @@ public class ManagerWrapper {
     public void stopDiscovery() {
         manager.stopPeerDiscovery(channel, null);
     }
-
+    @SuppressLint("MissingPermission")
     public void requestConnectionToDevice(WifiP2pDevice device) {
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -65,8 +67,7 @@ public class ManagerWrapper {
     }
 
     public ArrayList<WifiP2pDevice> getDevices(WifiP2pDeviceList peers) {
-        ArrayList<WifiP2pDevice> devices = new ArrayList<>();
-        devices.addAll(peers.getDeviceList());
+        ArrayList<WifiP2pDevice> devices = new ArrayList<>(peers.getDeviceList());
         return devices;
     }
 
@@ -94,6 +95,7 @@ public class ManagerWrapper {
         serverHolder.beginGame();
     }
 
+    @SuppressLint("MissingPermission")
     public void requestPeers(MainActivity activity) {
         manager.requestPeers(channel, activity);
     }

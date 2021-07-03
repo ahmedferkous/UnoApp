@@ -1,13 +1,22 @@
 package com.example.unoapp.Networking;
 
+import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.unoapp.GameLogic.PlayerInstance;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.InetAddress;
@@ -30,6 +39,7 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnect
     private DataOutputStream out;
     private final InetAddress inetAddress;
     private final String nickName;
+    private File image;
     private final int port;
 
 
@@ -41,12 +51,18 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnect
         return out;
     }
 
+    public ClientHolder(InetAddress inetAddress, String nickName, File image, int port) {
+        this.inetAddress = inetAddress;
+        this.nickName = nickName;
+        this.image = image;
+        this.port = port;
+    }
+
     public ClientHolder(InetAddress inetAddress, String nickName, int port) {
         this.inetAddress = inetAddress;
         this.nickName = nickName;
         this.port = port;
     }
-
 
     private void connect() throws IOException {
         Socket client = new Socket();

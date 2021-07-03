@@ -7,9 +7,71 @@
     tools:context=".PlaceholderActivity">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recViewCards"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/recView"
-        android:scrollbars="horizontal"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:scrollbars="horizontal"
+        tools:itemCount="7" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recViewPlayers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:scrollbars="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/linLayoutCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/imgViewStackCards"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:src="@drawable/backcard" />
+
+        <ImageView
+            android:id="@+id/imgViewPlacedCard"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/one_red" />
+
+        <ImageView
+            android:id="@+id/imageRotation"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/clockwise_red" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtRedraw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/recViewCards"
+        android:text="Redraw"
+        android:textSize="18sp"
+        android:layout_marginLeft="20dp"/>
+
+    <TextView
+        android:id="@+id/txtReverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/recViewCards"
+        android:layout_toRightOf="@id/txtRedraw"
+        android:text="Reverse"
+        android:textSize="18sp"
+        android:layout_marginLeft="20dp"/>
+
 
 </RelativeLayout>

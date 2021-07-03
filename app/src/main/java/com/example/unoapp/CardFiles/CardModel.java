@@ -13,6 +13,13 @@ public class CardModel {
     public static final String TYPE_COLOR_SWITCH = "type_color_switch";
     public static final String TYPE_PLUS_FOUR = "type_plus_four";
     public static final String TYPE_BACK = "back_card";
+    public static final String TYPE_REVEAL = "type_reveal";
+    public static final String TYPE_LIFO = "type_last_in_first_out";
+    public static final String TYPE_DEFLECT = "type_deflect";
+    public static final String TYPE_DISCARD_COLOR = "type_discard_color";
+    public static final String TYPE_REDRAW = "type_redraw";
+    public static final String TYPE_TRADE_HANDS = "type_trade_hands";
+    public static final String TYPE_CANCELLED = "type_cancelled";
 
     public static final String NUMBER_ZERO = "0";
     public static final String NUMBER_ONE = "1";
