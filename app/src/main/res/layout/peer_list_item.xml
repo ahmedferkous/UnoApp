@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="7dp"
     android:elevation="7dp"
     android:id="@+id/parent"
-    android:layout_margin="20dp">
+    android:layout_margin="5dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -22,13 +23,15 @@
                 android:layout_height="wrap_content"
                 android:text="Host Name: "
                 android:id="@+id/txtHost"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtHostName"
-                android:text="Host Name"/>
+                android:text="Host Name"
+                android:textSize="15sp"/>
 
         </LinearLayout>
 
@@ -44,13 +47,15 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/txtAddress"
                 android:text="Address: "
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="15sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtAddressName"
-                android:text="Mac Address"/>
+                android:text="Mac Address"
+                android:textSize="15sp"/>
 
         </LinearLayout>
 

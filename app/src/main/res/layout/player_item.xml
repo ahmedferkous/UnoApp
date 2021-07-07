@@ -18,21 +18,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp">
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/playerImage"
-                android:src="@drawable/ic_launcher_background"/>
-
             <TextView
-                android:layout_below="@id/playerImage"
                 android:id="@+id/txtPlayerName"
                 android:layout_width="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content"
                 android:text="Player Name"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
 
@@ -56,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:text="x7"
-                    android:textSize="15sp"/>
+                    android:textSize="20sp"/>
 
             </LinearLayout>
 

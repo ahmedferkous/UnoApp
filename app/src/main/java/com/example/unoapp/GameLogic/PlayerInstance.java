@@ -7,6 +7,7 @@ import com.example.unoapp.CardFiles.Deck;
 import com.example.unoapp.Networking.ClientHolder;
 import com.example.unoapp.Networking.Message;
 import com.example.unoapp.Networking.ServerHolder;
+import com.example.unoapp.Networking.UnoClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -18,23 +19,28 @@ import java.util.Stack;
 public class PlayerInstance {
     private static final String TAG = "PlayerInstance";
 
-    public interface onServerDisconnection {
-        void onDisconnection();
+    public interface onServerStatus {
+        void onDisconnection(boolean isGameRunning);
     }
 
     private final ClientHolder client;
-    private final onServerDisconnection onServerDisconnection;
+    private final onServerStatus onServerStatus;
     private ArrayList<String> playersList;
     private Stack<CardModel> placedCards;
     public static Type cardType = new TypeToken<Stack<CardModel>>() {}.getType();
+    public static Type playersType = new TypeToken<ArrayList<String>>(){}.getType();
+    private ServerHolder.LobbyNotification lobbyNotification;
     private ArrayList<CardModel> hand;
     private final Gson gson = new Gson();
+    private boolean gameBegun = false;
 
-    public PlayerInstance(ClientHolder client) {
+    public PlayerInstance(ClientHolder client, ServerHolder.LobbyNotification lobbyNotification) {
         this.client = client;
-        onServerDisconnection = client;
+        onServerStatus = client;
+        this.lobbyNotification = lobbyNotification;
         playersList = new ArrayList<>();
         placedCards = new Stack<>();
+        lobbyNotification.isServerHoster(false);
         beginReceiving();
     }
 
@@ -50,17 +56,25 @@ public class PlayerInstance {
                         Message receivedMessage = ServerHolder.decipherMessage(client.getIn());
 
                         switch (receivedMessage.getMessage_type()) {
-                            case ServerHolder.CONNECTION_OF_CLIENT:
-                                playersList.add(receivedMessage.getMessage());
+                            case ServerHolder.CONNECTION_TEST:
+                                Log.d(TAG, "run: Server tested connection");
+                                ServerHolder.send(new Message(ServerHolder.CONNECTION_TEST, null), client.getOut());
                                 break;
+                            case ServerHolder.CONNECTION_OF_CLIENT:
                             case ServerHolder.DISCONNECTION_OF_CLIENT:
-                                playersList.remove(receivedMessage.getMessage());
+                                playersList = gson.fromJson(receivedMessage.getMessage(), playersType);
+                                if (!gameBegun) {
+                                    lobbyNotification.providedPlayerDetailsResult(playersList);
+                                }
+                                Log.d(TAG, "run: ???????");
                                 break;
                             case GameInstance.UPDATE_PLAYERS:
                                 // TODO: 21/06/2021 update of reversal
                                 break;
                             case GameInstance.GAME_BEGIN:
                                 placedCards = gson.fromJson(receivedMessage.getMessage(), cardType);
+                                gameBegun = true;
+                                lobbyNotification.gameBegun();
                                 Log.d(TAG, "run: Game begun, stack received: " + placedCards.peek());
                                 initHand();
                                 break;
@@ -87,7 +101,7 @@ public class PlayerInstance {
                         }
                     } catch (IOException e) {
                         serverConnection = false;
-                        onServerDisconnection.onDisconnection();
+                        onServerStatus.onDisconnection(gameBegun);
                     }
                 }
             }

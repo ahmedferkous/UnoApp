@@ -7,20 +7,20 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
 import com.example.unoapp.MainActivity;
-import com.example.unoapp.Networking.ManagerWrapper;
+import com.example.unoapp.ServerBrowsing;
 
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "WifiDirectBroadcastRece";
-    private ManagerWrapper managerWrapper;
-    private MainActivity activity;
+    private NetworkWrapper networkWrapper;
+    private ServerBrowsing activity;
 
     public WifiDirectBroadcastReceiver() {
 
     }
 
-    public WifiDirectBroadcastReceiver(MainActivity activity, ManagerWrapper managerWrapper) {
+    public WifiDirectBroadcastReceiver(ServerBrowsing activity, NetworkWrapper networkWrapper) {
         super();
-        this.managerWrapper = managerWrapper;
+        this.networkWrapper = networkWrapper;
         this.activity = activity;
     }
 
@@ -43,15 +43,15 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 break;
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
                 // Call WifiP2pManager.requestPeers() to get a list of current peers.
-                managerWrapper.requestPeers(activity);
+                networkWrapper.requestPeers(activity);
                 break;
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
                 // respond to new connections or disconnections/
-                managerWrapper.requestConnectionInfo(activity);
+                networkWrapper.requestConnectionInfo(activity);
                 break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
                 // respond to device's wifi state changing.
-                managerWrapper.discover();
+                networkWrapper.discover();
                 break;
             default:
                 break;

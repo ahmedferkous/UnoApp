@@ -5,16 +5,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,17 +18,14 @@ import com.example.unoapp.CardFiles.Deck;
 import com.example.unoapp.GameLogic.PlayersAdapter;
 import com.example.unoapp.Networking.UnoClient;
 
-import org.w3c.dom.Text;
-
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-public class PlaceholderActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
     private static final String TAG = "PlaceholderActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_placeholder);
+        setContentView(R.layout.activity_game);
 
         RecyclerView revViewCards = findViewById(R.id.recViewCards);
         RecyclerView recViewPlayers = findViewById(R.id.recViewPlayers);
@@ -77,10 +68,10 @@ public class PlaceholderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (imageRotation.getAnimation().equals(aniRotateClk)) {
-                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(PlaceholderActivity.this, R.drawable.anticlockwise_red));
+                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, R.drawable.anticlockwise_red));
                     imageRotation.setAnimation(aniRotateAntiClk);
                 } else {
-                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(PlaceholderActivity.this, R.drawable.clockwise_red));
+                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, R.drawable.clockwise_red));
                     imageRotation.setAnimation(aniRotateClk);
                 }
             }

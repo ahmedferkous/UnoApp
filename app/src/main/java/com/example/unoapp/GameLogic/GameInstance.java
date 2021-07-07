@@ -33,6 +33,7 @@ public class GameInstance {
     public static final String STACKED_RESULT = "player_stacked_plus";
     public static final String STACKED_NUMBER = "stacked_number";
     public static final String TURN_FINISHED = "finished_turn";
+    public static final String HAND_SIZE = "hand_size";
 
     private final ServerHolder server;
     private static OnUserDisconnect onUserDisconnect;
@@ -67,7 +68,7 @@ public class GameInstance {
         new LiveGame().start();
     }
 
-    private ArrayList<String> getListOfPlayers() {
+    public static ArrayList<String> getListOfPlayers(ArrayList<UnoClient> players) {
         ArrayList<String> listOfPlayers = new ArrayList<>();
 
         for (UnoClient clients : players) {
@@ -115,6 +116,7 @@ public class GameInstance {
 
                 Message receivedMessage = ServerHolder.decipherMessage(in);
                 Stack<CardModel> cards = gson.fromJson(receivedMessage.getMessage(), PlayerInstance.cardType);
+
                 switch (receivedMessage.getMessage_type()) {
                     case TURN_FINISHED:
                         onCompleteTurn.onCompletedTurn(cards, false, 0);
@@ -143,6 +145,7 @@ public class GameInstance {
         public void onCompletedTurn(Stack<CardModel> cards, boolean stackedEvent, int numberOfStackedCards) {
             // TODO: 14/06/2021 Signal player drew a card if stack size didn't change
             // TODO: 14/06/2021 Come up with solutions for dealing with 'stacking' as well as color-switches
+
             if (!(cardStack.size() == cards.size())) {
                 cardStack = cards;
                 server.broadcast(new Message(UPDATE_STACK, gson.toJson(cards)));
@@ -164,7 +167,7 @@ public class GameInstance {
                         server.broadcast(new Message(COLOR_CHANGE_EVENT, cardOnTop.getColor()));
                     case CardModel.TYPE_REVERSE:
                         Collections.reverse(players);
-                        server.broadcast(new Message(UPDATE_PLAYERS, gson.toJson(getListOfPlayers())));
+                        server.broadcast(new Message(UPDATE_PLAYERS, null));
                     default:
                         if (playerIndexTurn == players.size() - 1) {
                             playerIndexTurn = 0;
@@ -189,7 +192,7 @@ public class GameInstance {
 
             // TODO: 14/06/2021 Fix
             //while(gameRunning) {
-            new LivePlayer(players.get(playerIndexTurn), this).start();
+            //new LivePlayer(players.get(playerIndexTurn), this).start();
             //}
         }
 

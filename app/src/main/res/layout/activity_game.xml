@@ -4,7 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlaceholderActivity">
+    tools:context=".GameActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="In-Game - Time Elapsed"
+                android:textColor="#808080"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recViewCards"
@@ -12,14 +34,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:scrollbars="horizontal"
-        tools:itemCount="7" />
+        android:scrollbars="horizontal" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recViewPlayers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/toolbar"
         android:layout_centerHorizontal="true"
         android:scrollbars="horizontal" />
 
@@ -59,19 +80,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/recViewCards"
+        android:layout_marginLeft="20dp"
         android:text="Redraw"
-        android:textSize="18sp"
-        android:layout_marginLeft="20dp"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/txtReverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/recViewCards"
+        android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/txtRedraw"
         android:text="Reverse"
-        android:textSize="18sp"
-        android:layout_marginLeft="20dp"/>
+        android:textSize="18sp" />
 
 
 </RelativeLayout>

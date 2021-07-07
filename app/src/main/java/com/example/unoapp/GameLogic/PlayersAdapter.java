@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,19 +45,20 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
         String handSize = "x" + boundPlayer.getHandSize() + " Cards";
         holder.txtNumOfCards.setText(handSize);
 
-        /*
-        Glide.with(context)
-                .asBitmap()
-                .load(boundPlayer.getImage())
-                .into(holder.playerImage);
+    /*
+    Glide.with(context)
+            .asBitmap()
+            .load(boundPlayer.getImage())
+            .into(holder.playerImage);
 
-         */
+     */
 
         if (boundPlayer.isTurn()) {
             holder.imagePlayerTurn.setVisibility(View.VISIBLE);
         } else {
             holder.imagePlayerTurn.setVisibility(View.GONE);
         }
+
     }
 
     @Override
@@ -71,14 +73,13 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView txtPlayerName, txtNumOfCards;
-        private ImageView playerImage, imagePlayerTurn;
+        private ImageView imagePlayerTurn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             txtPlayerName = itemView.findViewById(R.id.txtPlayerName);
             txtNumOfCards = itemView.findViewById(R.id.txtNumOfCards);
-            playerImage = itemView.findViewById(R.id.playerImage);
             imagePlayerTurn = itemView.findViewById(R.id.imagePlayerTurn);
         }
     }

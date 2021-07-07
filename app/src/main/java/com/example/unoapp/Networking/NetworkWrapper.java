@@ -1,6 +1,7 @@
 package com.example.unoapp.Networking;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -9,20 +10,33 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
 import com.example.unoapp.MainActivity;
+import com.example.unoapp.ServerBrowsing;
 
 import java.util.ArrayList;
 
-public class ManagerWrapper {
+public class NetworkWrapper {
+    public interface GameStatus {
+        void beginGame();
+        void endGame();
+    }
     private static final String TAG = "ManagerWrapper";
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    private GameStatus gameStatus;
     private ServerHolder serverHolder;
     private boolean serverExists = false;
     private int port;
+    private String nickName;
 
-    public ManagerWrapper(WifiP2pManager manager, WifiP2pManager.Channel channel) {
+    public NetworkWrapper(WifiP2pManager manager, WifiP2pManager.Channel channel) {
         this.manager = manager;
         this.channel = channel;
+    }
+
+    public void begin() {
+        if (gameStatus != null) {
+            gameStatus.beginGame();
+        }
     }
 
     public void setPort(int port) {
@@ -44,6 +58,10 @@ public class ManagerWrapper {
                 Log.d(TAG, "onFailure: Failure " + reason);
             }
         });
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public void stopDiscovery() {
@@ -71,18 +89,19 @@ public class ManagerWrapper {
         return devices;
     }
 
-    public void handleServerToClientCommunication(WifiP2pInfo info) {
+    public void handleServerToClientCommunication(WifiP2pInfo info, Context context) {
         if (null != info) {
             Log.d(TAG, "onConnectionInfoAvailable: " + info);
             if (info.groupOwnerAddress != null) {
                 if (info.isGroupOwner) {
                     if (!serverExists) {
-                        serverHolder = new ServerHolder(port, "humid");
+                        serverHolder = new ServerHolder(port, nickName, context);
                         new Thread(serverHolder).start();
                         serverExists = true;
+                        gameStatus = serverHolder;
                     }
                 } else {
-                    new Thread(new ClientHolder(info.groupOwnerAddress, "Ahmed", port)).start();
+                    new Thread(new ClientHolder(info.groupOwnerAddress,nickName, port, context)).start();
                 }
             }
         } else {
@@ -90,17 +109,13 @@ public class ManagerWrapper {
         }
     }
 
-    //temp solution for debugging purposes only
-    public void begin() {
-        serverHolder.beginGame();
-    }
 
     @SuppressLint("MissingPermission")
-    public void requestPeers(MainActivity activity) {
+    public void requestPeers(ServerBrowsing activity) {
         manager.requestPeers(channel, activity);
     }
 
-    public void requestConnectionInfo(MainActivity activity) {
+    public void requestConnectionInfo(ServerBrowsing activity) {
         manager.requestConnectionInfo(channel, activity);
     }
 

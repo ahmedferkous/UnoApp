@@ -1,5 +1,6 @@
 package com.example.unoapp.Networking;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
@@ -22,26 +23,32 @@ import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import static com.example.unoapp.Networking.ServerHolder.MAX_CLIENTS_CONNECTED;
 import static com.example.unoapp.Networking.ServerHolder.SUCCESS_CONNECTION;
 import static com.example.unoapp.Networking.ServerHolder.UNO_APPLICATION_KEY;
 import static com.example.unoapp.Networking.ServerHolder.decipherMessage;
 
-public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnection{
+public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
     @Override
-    public void onDisconnection() {
-        // TODO: 2/06/2021 Notify user of disconnection
+    public void onDisconnection(boolean isGameRunning) {
+        if (!isGameRunning) {
+            lobbyNotification.providedPlayerDetailsResult(new ArrayList<>());
+        } else {
+            // TODO: 7/07/2021 show notification of disconnection 
+        }
     }
 
     private static final String TAG = "ClientHolder";
+    private ServerHolder.LobbyNotification lobbyNotification;
     private DataInputStream in;
     private DataOutputStream out;
     private final InetAddress inetAddress;
+    private Context context;
     private final String nickName;
     private File image;
     private final int port;
-
 
     public DataInputStream getIn() {
         return in;
@@ -51,16 +58,11 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnect
         return out;
     }
 
-    public ClientHolder(InetAddress inetAddress, String nickName, File image, int port) {
+    public ClientHolder(InetAddress inetAddress, String nickName, int port, Context context) {
         this.inetAddress = inetAddress;
         this.nickName = nickName;
-        this.image = image;
-        this.port = port;
-    }
-
-    public ClientHolder(InetAddress inetAddress, String nickName, int port) {
-        this.inetAddress = inetAddress;
-        this.nickName = nickName;
+        this.context = context;
+        lobbyNotification = (ServerHolder.LobbyNotification) context;
         this.port = port;
     }
 
@@ -75,10 +77,10 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnect
 
         Message receivedMessage = decipherMessage(in);
         if (receivedMessage != null) {
-            switch(receivedMessage.getMessage_type()) {
+            switch (receivedMessage.getMessage_type()) {
                 case SUCCESS_CONNECTION:
                     out.writeUTF(nickName);
-                    new PlayerInstance(this);
+                    new PlayerInstance(this, lobbyNotification);
                     Log.d(TAG, "connect: Successful connection");
                     break;
                 case MAX_CLIENTS_CONNECTED:
@@ -101,6 +103,6 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerDisconnect
             e.printStackTrace();
         }
     }
-    
+
 
 }
