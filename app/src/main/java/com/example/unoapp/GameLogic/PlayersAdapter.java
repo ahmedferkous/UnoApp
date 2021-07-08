@@ -21,7 +21,7 @@ import com.example.unoapp.R;
 import java.util.ArrayList;
 
 public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHolder> {
-    private ArrayList<UnoClient> players = new ArrayList<>();
+    private ArrayList<Players> players = new ArrayList<>();
     private Context context;
 
 
@@ -39,9 +39,9 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        UnoClient boundPlayer = players.get(position);
+        Players boundPlayer = players.get(position);
 
-        holder.txtPlayerName.setText(boundPlayer.getNickname());
+        holder.txtPlayerName.setText(boundPlayer.getNickName());
         String handSize = "x" + boundPlayer.getHandSize() + " Cards";
         holder.txtNumOfCards.setText(handSize);
 
@@ -66,7 +66,7 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.ViewHold
         return players.size();
     }
 
-    public void setPlayers(ArrayList<UnoClient> players) {
+    public void setPlayers(ArrayList<Players> players) {
         this.players = players;
         notifyDataSetChanged();
     }

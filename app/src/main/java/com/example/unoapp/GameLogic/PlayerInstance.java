@@ -6,6 +6,7 @@ import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.CardFiles.Deck;
 import com.example.unoapp.Networking.ClientHolder;
 import com.example.unoapp.Networking.Message;
+import com.example.unoapp.Networking.NetworkWrapper;
 import com.example.unoapp.Networking.ServerHolder;
 import com.example.unoapp.Networking.UnoClient;
 import com.google.gson.Gson;
@@ -25,10 +26,12 @@ public class PlayerInstance {
 
     private final ClientHolder client;
     private final onServerStatus onServerStatus;
-    private ArrayList<String> playersList;
+    private ArrayList<Players> playersList;
     private Stack<CardModel> placedCards;
-    public static Type cardType = new TypeToken<Stack<CardModel>>() {}.getType();
-    public static Type playersType = new TypeToken<ArrayList<String>>(){}.getType();
+    public static Type cardType = new TypeToken<Stack<CardModel>>() {
+    }.getType();
+    public static Type playersType = new TypeToken<ArrayList<Players>>() {
+    }.getType();
     private ServerHolder.LobbyNotification lobbyNotification;
     private ArrayList<CardModel> hand;
     private final Gson gson = new Gson();
@@ -40,8 +43,16 @@ public class PlayerInstance {
         this.lobbyNotification = lobbyNotification;
         playersList = new ArrayList<>();
         placedCards = new Stack<>();
-        lobbyNotification.isServerHoster(false);
         beginReceiving();
+    }
+
+    private ArrayList<String> getPlayers(ArrayList<Players> players) {
+        ArrayList<String> playersArr = new ArrayList<>();
+        for (Players player :
+                players) {
+            playersArr.add(player.getNickName());
+        }
+        return playersArr;
     }
 
     // Only IN!
@@ -49,6 +60,7 @@ public class PlayerInstance {
         new Thread() {
             boolean serverConnection = true;
 
+            // TODO: 8/07/2021 implement functionality with networkwrapper timings (send confirmation to server when players are all ready to begin)
             @Override
             public void run() {
                 while (serverConnection) {
@@ -63,28 +75,37 @@ public class PlayerInstance {
                             case ServerHolder.CONNECTION_OF_CLIENT:
                             case ServerHolder.DISCONNECTION_OF_CLIENT:
                                 playersList = gson.fromJson(receivedMessage.getMessage(), playersType);
+                                for (Players p : playersList) {
+                                    if (p.getUser_id() == client.getUnique_id()) {
+                                        playersList.remove(p);
+                                    }
+                                }
                                 if (!gameBegun) {
-                                    lobbyNotification.providedPlayerDetailsResult(playersList);
+                                    lobbyNotification.providedPlayerDetailsResult(getPlayers(playersList), false);
+                                } else {
+                                    NetworkWrapper.getManager().getUpdateCallback().setPlayers(playersList);
                                 }
                                 Log.d(TAG, "run: ???????");
                                 break;
                             case GameInstance.UPDATE_PLAYERS:
-                                // TODO: 21/06/2021 update of reversal
+                                NetworkWrapper.getManager().getUpdateCallback().reversalChange();
                                 break;
                             case GameInstance.GAME_BEGIN:
+                                hand = initHand();
                                 placedCards = gson.fromJson(receivedMessage.getMessage(), cardType);
+                                lobbyNotification.gameBegun(playersList, hand, placedCards.peek());
                                 gameBegun = true;
-                                lobbyNotification.gameBegun();
                                 Log.d(TAG, "run: Game begun, stack received: " + placedCards.peek());
-                                initHand();
+
                                 break;
                             case GameInstance.UPDATE_STACK:
                                 placedCards = gson.fromJson(receivedMessage.getMessage(), cardType);
+                                NetworkWrapper.getManager().getUpdateCallback().setPlacedCard(placedCards.peek());
                                 Log.d(TAG, "run: Received Stack: " + placedCards.peek());
                                 break;
                             case GameInstance.COLOR_CHANGE_EVENT:
                                 String color = receivedMessage.getMessage();
-                                // TODO: 26/06/2021 Update color 
+                                NetworkWrapper.getManager().getUpdateCallback().colorChange(color);
                                 break;
                             case GameInstance.STACKED_RESULT:
                                 break;
@@ -95,6 +116,7 @@ public class PlayerInstance {
 
                                 placedCards.push(new CardModel(CardModel.COLOR_BLUE, CardModel.TYPE_SKIP));
                                 ServerHolder.send(new Message(GameInstance.TURN_FINISHED, gson.toJson(placedCards)), client.getOut());
+                                NetworkWrapper.getManager().getUpdateCallback().setHand(hand);
                                 break;
                             default:
                                 break;
@@ -146,11 +168,12 @@ public class PlayerInstance {
         return false;
     }
 
-    private void initHand() {
-        hand = new ArrayList<>();
+    public static ArrayList<CardModel> initHand() {
+        ArrayList<CardModel> newHand = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            hand.add(Deck.drawCard());
+            newHand.add(Deck.drawCard());
         }
+        return newHand;
     }
 
 

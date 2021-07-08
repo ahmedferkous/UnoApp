@@ -21,6 +21,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
     public interface onPlacedCard {
         void placedCardResult(CardModel placedCard);
     }
+
     private ArrayList<CardModel> cards = new ArrayList<>();
     private onPlacedCard placedCard;
     private Context context;
@@ -59,12 +60,12 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                     try {
-                                         placedCard = (onPlacedCard) context;
-                                         placedCard.placedCardResult(boundCard);
-                                     } catch (ClassCastException e) {
-                                         e.printStackTrace();
-                                     }
+                                    try {
+                                        placedCard = (onPlacedCard) context;
+                                        placedCard.placedCardResult(boundCard);
+                                    } catch (ClassCastException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }).create();
                     builder.show();
@@ -78,12 +79,12 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
         return cards.size();
     }
 
-    private int getImage(CardModel boundCard) {
-        switch(boundCard.getType()) {
+    public static int getImage(CardModel card) {
+        switch (card.getType()) {
             case CardModel.TYPE_NUMBER:
-                switch(boundCard.getNumber()) {
+                switch (card.getNumber()) {
                     case CardModel.NUMBER_ZERO:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.zero_red;
                             case CardModel.COLOR_YELLOW:
@@ -95,7 +96,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_ONE:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.one_red;
                             case CardModel.COLOR_YELLOW:
@@ -107,7 +108,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_TWO:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.two_red;
                             case CardModel.COLOR_YELLOW:
@@ -119,7 +120,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_THREE:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.three_red;
                             case CardModel.COLOR_YELLOW:
@@ -131,7 +132,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_FOUR:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.four_red;
                             case CardModel.COLOR_YELLOW:
@@ -143,7 +144,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_FIVE:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.five_red;
                             case CardModel.COLOR_YELLOW:
@@ -155,7 +156,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_SIX:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.six_red;
                             case CardModel.COLOR_YELLOW:
@@ -167,7 +168,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_SEVEN:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.seven_red;
                             case CardModel.COLOR_YELLOW:
@@ -179,7 +180,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_EIGHT:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.eight_red;
                             case CardModel.COLOR_YELLOW:
@@ -191,7 +192,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                         }
                         break;
                     case CardModel.NUMBER_NINE:
-                        switch(boundCard.getColor()) {
+                        switch (card.getColor()) {
                             case CardModel.COLOR_RED:
                                 return R.drawable.nine_red;
                             case CardModel.COLOR_YELLOW:
@@ -206,7 +207,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                 }
                 break;
             case CardModel.TYPE_PLUS_TWO:
-                switch(boundCard.getColor()) {
+                switch (card.getColor()) {
                     case CardModel.COLOR_RED:
                         return R.drawable.plustwo_red;
                     case CardModel.COLOR_YELLOW:
@@ -218,7 +219,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                 }
                 break;
             case CardModel.TYPE_SKIP:
-                switch(boundCard.getColor()) {
+                switch (card.getColor()) {
                     case CardModel.COLOR_RED:
                         return R.drawable.skip_red;
                     case CardModel.COLOR_YELLOW:
@@ -230,7 +231,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                 }
                 break;
             case CardModel.TYPE_REVERSE:
-                switch(boundCard.getColor()) {
+                switch (card.getColor()) {
                     case CardModel.COLOR_RED:
                         return R.drawable.reverse_red;
                     case CardModel.COLOR_YELLOW:

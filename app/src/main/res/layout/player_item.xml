@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="6dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
-        android:id="@+id/cardView"
-        app:cardCornerRadius="2dp"
-        app:cardBackgroundColor="#C4FFFFFF">
+        app:cardBackgroundColor="#C4FFFFFF"
+        app:cardCornerRadius="2dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -21,8 +21,8 @@
             <TextView
                 android:id="@+id/txtPlayerName"
                 android:layout_width="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:text="Player Name"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -33,9 +33,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/txtPlayerName"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:orientation="horizontal"
-                android:layout_centerHorizontal="true">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="15dp"
@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:text="x7"
-                    android:textSize="20sp"/>
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -58,11 +58,11 @@
     </com.google.android.material.card.MaterialCardView>
 
     <ImageView
+        android:id="@+id/imagePlayerTurn"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/imagePlayerTurn"
-        android:src="@drawable/ic_player_turn"
         android:layout_below="@id/cardView"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_player_turn" />
 
 </RelativeLayout>

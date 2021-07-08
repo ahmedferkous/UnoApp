@@ -34,7 +34,7 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
     @Override
     public void onDisconnection(boolean isGameRunning) {
         if (!isGameRunning) {
-            lobbyNotification.providedPlayerDetailsResult(new ArrayList<>());
+            lobbyNotification.providedPlayerDetailsResult(new ArrayList<>(), false);
         } else {
             // TODO: 7/07/2021 show notification of disconnection 
         }
@@ -46,8 +46,8 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
     private DataOutputStream out;
     private final InetAddress inetAddress;
     private Context context;
+    private int unique_id;
     private final String nickName;
-    private File image;
     private final int port;
 
     public DataInputStream getIn() {
@@ -80,6 +80,7 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
             switch (receivedMessage.getMessage_type()) {
                 case SUCCESS_CONNECTION:
                     out.writeUTF(nickName);
+                    unique_id = in.readInt();
                     new PlayerInstance(this, lobbyNotification);
                     Log.d(TAG, "connect: Successful connection");
                     break;
@@ -93,16 +94,20 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
         }
     }
 
-    // TODO: 31/05/2021 Create class extending IOException, to send message? 
+    public int getUnique_id() {
+        return unique_id;
+    }
+
+    // TODO: 31/05/2021 Create class extending IOException, to send message?
     @Override
     public void run() {
         try {
             connect();
         } catch (IOException e) {
+            lobbyNotification.connectionRefused();
             Log.d(TAG, "run: Exception");
             e.printStackTrace();
         }
     }
-
 
 }

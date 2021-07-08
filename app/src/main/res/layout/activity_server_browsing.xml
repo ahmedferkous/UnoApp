@@ -46,7 +46,6 @@
 
         <EditText
             android:id="@+id/edtTxtPort"
-            android:text="55755"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -54,29 +53,30 @@
             android:layout_toRightOf="@id/portTitle"
             android:hint="55755"
             android:inputType="number"
-            android:maxLength="5" />
+            android:maxLength="5"
+            android:text="55755" />
 
         <TextView
+            android:id="@+id/txtNicknameTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/edtTxtPort"
             android:text="Nickname:"
             android:textSize="18sp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/edtTxtPort"
-            android:layout_marginLeft="20dp"
-            android:id="@+id/txtNicknameTitle"/>
+            android:textStyle="bold" />
 
         <EditText
+            android:id="@+id/edtTxtNickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
             android:layout_toRightOf="@id/txtNicknameTitle"
             android:hint="Nickname"
-            android:layout_marginLeft="3dp"
-            android:layout_centerVertical="true"
-            android:id="@+id/edtTxtNickname"
             android:maxLength="12"
-            />
+            android:maxLines="1" />
 
 
         <ImageView
@@ -96,8 +96,8 @@
         android:layout_marginTop="10dp" />
 
     <RelativeLayout
-        android:layout_width="match_parent"
         android:id="@+id/lobbyRelLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/recViewNearbyPlayers"
         android:layout_centerHorizontal="true"
@@ -105,9 +105,9 @@
 
         <TextView
             android:id="@+id/txtYourLobby"
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:text="Your Lobby:"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -131,13 +131,13 @@
 
         <Button
             android:id="@+id/btnBegin"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/recViewLobbyPlayers"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:text="Begin" />
+            android:text="Begin"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

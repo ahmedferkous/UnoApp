@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardParent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="5dp"
     android:layout_margin="5dp"
-    android:id="@+id/cardParent">
+    app:cardCornerRadius="5dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/cardImage"
             android:layout_width="100dp"
             android:layout_height="200dp"
-            android:src="@drawable/backcard"
-            android:id="@+id/cardImage"/>
+            android:src="@drawable/backcard" />
 
     </RelativeLayout>
-
 
 
 </RelativeLayout>

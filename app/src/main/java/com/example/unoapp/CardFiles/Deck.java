@@ -10,6 +10,7 @@ public class Deck {
     private static int randomNum(int num) {
         return rand.nextInt(num);
     }
+
     // based on a random number from 0 to 4 (not including 4), get the color
     private static String getColor() {
         switch (randomNum(4)) {

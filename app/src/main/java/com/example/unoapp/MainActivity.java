@@ -21,7 +21,7 @@ import com.example.unoapp.Networking.WifiDirectBroadcastReceiver;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -16,6 +16,7 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/txtTimeElapsed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -65,13 +66,14 @@
             android:src="@drawable/one_red" />
 
         <ImageView
-            android:id="@+id/imageRotation"
+            android:id="@+id/imgViewRotation"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/clockwise_red" />
+            android:src="@drawable/clockwise_red"
+            android:tooltipText="clock,color_red" />
 
     </LinearLayout>
 

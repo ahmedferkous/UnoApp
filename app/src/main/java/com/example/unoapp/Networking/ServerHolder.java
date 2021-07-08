@@ -5,7 +5,10 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.GameLogic.GameInstance;
+import com.example.unoapp.GameLogic.Players;
 import com.example.unoapp.MainActivity;
 import com.example.unoapp.ServerBrowsing;
 import com.google.gson.Gson;
@@ -32,15 +35,16 @@ import javax.json.JsonValue;
 
 public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, NetworkWrapper.GameStatus {
     public interface LobbyNotification {
-        void providedPlayerDetailsResult(ArrayList<String> players);
-        void isServerHoster(boolean isHoster);
-        void gameBegun();
+        void providedPlayerDetailsResult(ArrayList<String> players, boolean isHoster);
+
+        void gameBegun(ArrayList<Players> players, ArrayList<CardModel> hand, CardModel firstCard);
+
+        void connectionRefused();
     }
 
     @Override
     public void beginGame() {
         listening = false;
-        lobbyNotification.gameBegun();
         gameInstance.beginGame();
     }
 
@@ -61,11 +65,16 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
             player.getSocket().close();
 
             clientList.remove(player);
+            for (Players removingPlayer : players) {
+                if (player.getUser_id() == removingPlayer.getUser_id()) {
+                    players.remove(removingPlayer);
+                }
+            }
             if (listening) {
-                lobbyNotification.providedPlayerDetailsResult(GameInstance.getListOfPlayers(clientList));
+                lobbyNotification.providedPlayerDetailsResult(GameInstance.getListOfPlayers(clientList), true);
             }
             Log.d(TAG, "onUserDisconnectResult: disconnection ");
-            broadcast(new Message(DISCONNECTION_OF_CLIENT,  gson.toJson(GameInstance.getListOfPlayers(clientList))));
+            broadcast(new Message(DISCONNECTION_OF_CLIENT, gson.toJson(players)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,25 +88,45 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
     public static final String CONNECTION_OF_CLIENT = "connected_client";
     public static final String UNO_APPLICATION_KEY = "_humid_uno_application_key_";
     public static Gson gson = new Gson();
-    public static Type messageType = new TypeToken<Message>(){}.getType();
+    public static Type messageType = new TypeToken<Message>() {
+    }.getType();
+    public static int USER_UNIQUE_ID = 0;
 
-    private LobbyNotification lobbyNotification;
+    private final LobbyNotification lobbyNotification;
+    private int server_id;
     private boolean listening = false;
     private final int port;
     private Context context;
-    private final String serverName;
+    private Players serverPlayer;
+    private String serverName;
     private GameInstance gameInstance;
-    private ArrayList<UnoClient> clientList; // TODO: 31/05/2021 add server hoster to client list
+    private ArrayList<Players> players = new ArrayList<>();
+    private ArrayList<UnoClient> clientList;// TODO: 31/05/2021 add server hoster to client list
 
     public ServerHolder(int port, String serverName, Context context) {
         this.serverName = serverName;
         this.port = port;
         this.context = context;
         lobbyNotification = (LobbyNotification) context;
+        server_id = USER_UNIQUE_ID;
+        serverPlayer = new Players(serverName, server_id);
+        players.add(serverPlayer);
+        USER_UNIQUE_ID++;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+        players.remove(serverPlayer);
+        serverPlayer = new Players(serverName, server_id);
+        players.add(serverPlayer);
     }
 
     public ArrayList<UnoClient> getClientList() {
         return clientList;
+    }
+
+    public ArrayList<Players> getPlayers() {
+        return players;
     }
 
     public void broadcast(Message message) {
@@ -119,7 +148,7 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
     public static void send(Message message, DataOutputStream out) {
         try {
             out.writeUTF(gson.toJson(message));
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -128,17 +157,30 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         while (listening) {
             for (UnoClient client : clientList) {
                 try {
-                    Thread.sleep(3000);
                     DataOutputStream outputStream = new DataOutputStream(client.getSocket().getOutputStream());
                     DataInputStream inputStream = new DataInputStream(client.getSocket().getInputStream());
                     send(new Message(CONNECTION_TEST, null), outputStream);
                     decipherMessage(inputStream);
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     onUserDisconnectResult(client);
                 }
             }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    public int getServer_id() {
+        return server_id;
+    }
+
+    public LobbyNotification getLobbyNotification() {
+        return lobbyNotification;
+    }
+
 
     private void listen() throws IOException {
         listening = true;
@@ -146,7 +188,6 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         gameInstance = new GameInstance(this);
         clientList = new ArrayList<>();
 
-        lobbyNotification.isServerHoster(true);
         new Thread() {
             @Override
             public void run() {
@@ -163,8 +204,11 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
                 if (clientList.size() < 3) {
                     outputStream.writeUTF(gson.toJson(new Message(SUCCESS_CONNECTION, "Successfully connected to server on port: " + port)));
                     String nickName = inputStream.readUTF();
-                    UnoClient newUnoClient = new UnoClient(newClient, nickName);
+                    UnoClient newUnoClient = new UnoClient(newClient, nickName, USER_UNIQUE_ID);
                     clientList.add(newUnoClient);
+                    players.add(new Players(nickName, USER_UNIQUE_ID));
+                    outputStream.writeInt(USER_UNIQUE_ID);
+                    USER_UNIQUE_ID++;
                     /*
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
@@ -174,8 +218,8 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
                     });
 
                      */
-                    lobbyNotification.providedPlayerDetailsResult(GameInstance.getListOfPlayers(clientList));
-                    broadcast(new Message(CONNECTION_OF_CLIENT, gson.toJson(GameInstance.getListOfPlayers(clientList))));
+                    lobbyNotification.providedPlayerDetailsResult(GameInstance.getListOfPlayers(clientList), true);
+                    broadcast(new Message(CONNECTION_OF_CLIENT, gson.toJson(players)));
                     Log.d(TAG, "listen: connection of client " + nickName);
                 } else {
                     outputStream.writeUTF(gson.toJson(new Message(MAX_CLIENTS_CONNECTED, "Sorry! Maximum players reached on " + serverName)));
@@ -190,7 +234,7 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         try {
             listen();
         } catch (IOException e) {
-            // TODO: 31/05/2021 handle server disconnection, use callbacks?
+            Log.d(TAG, "run: SERVER ??");
             e.printStackTrace();
         }
     }

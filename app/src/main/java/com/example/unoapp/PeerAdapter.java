@@ -22,6 +22,7 @@ public class PeerAdapter extends RecyclerView.Adapter<PeerAdapter.ViewHolder> {
     public interface RequestConnectionToDevice {
         void onConnectionRequestResult(WifiP2pDevice device);
     }
+
     private RequestConnectionToDevice requestConnectionToDevice;
     private ArrayList<WifiP2pDevice> devices = new ArrayList<>();
     private Context context;
@@ -38,7 +39,7 @@ public class PeerAdapter extends RecyclerView.Adapter<PeerAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.peer_list_item, parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.peer_list_item, parent, false);
         return new ViewHolder(view);
     }
 

@@ -49,15 +49,11 @@ public class GameInstance {
 
 
     private CardModel drawOrdinaryCard() {
-        /*
         CardModel retrievedCard = Deck.drawCard();
         while (!retrievedCard.getType().equals(CardModel.TYPE_NUMBER)) {
             retrievedCard = Deck.drawCard();
         }
         return retrievedCard;
-
-         */
-        return new CardModel(CardModel.COLOR_RED, CardModel.NUMBER_ONE, CardModel.TYPE_NUMBER);
     }
 
     public void beginGame() {
@@ -189,7 +185,18 @@ public class GameInstance {
         @Override
         public void run() {
             server.broadcast(new Message(GAME_BEGIN, gson.toJson(cardStack)));
+            //temp solution for testing purposes
+            ArrayList<CardModel> hand = new ArrayList<>();
+            hand = PlayerInstance.initHand();
 
+            ArrayList<Players> players = new ArrayList<>(server.getPlayers().size());
+            for (Players p : server.getPlayers()) {
+                if (!(p.getUser_id() == server.getServer_id())) {
+                    players.add(p);
+                }
+            }
+
+            server.getLobbyNotification().gameBegun(players, hand, cardStack.peek());
             // TODO: 14/06/2021 Fix
             //while(gameRunning) {
             //new LivePlayer(players.get(playerIndexTurn), this).start();

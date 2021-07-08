@@ -10,42 +10,16 @@ import java.util.ArrayList;
 public class UnoClient {
     private Socket socket;
     private String nickname;
-    private int handSize = 7;
-    private Bitmap image;
-    private boolean isTurn = false;
+    private int user_id;
 
-    public int getHandSize() {
-        return handSize;
-    }
-
-    public void setHandSize(int handSize) {
-        this.handSize = handSize;
-    }
-
-    public UnoClient(Socket socket, String nickname) {
+    public UnoClient(Socket socket, String nickname, int user_id) {
         this.socket = socket;
         this.nickname = nickname;
+        this.user_id = user_id;
     }
 
-    public UnoClient(String nickname, boolean isTurn) {
-        this.nickname = nickname;
-        this.isTurn = isTurn;
-    }
-
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-    }
-
-    public boolean isTurn() {
-        return isTurn;
-    }
-
-    public void setTurn(boolean turn) {
-        isTurn = turn;
+    public int getUser_id() {
+        return user_id;
     }
 
     public Socket getSocket() {

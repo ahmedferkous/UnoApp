@@ -20,53 +20,66 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.GameLogic.LobbyAdapter;
+import com.example.unoapp.GameLogic.Players;
 import com.example.unoapp.GameLogic.PlayersAdapter;
 import com.example.unoapp.Networking.ClientHolder;
 import com.example.unoapp.Networking.NetworkWrapper;
 import com.example.unoapp.Networking.ServerHolder;
 import com.example.unoapp.Networking.UnoClient;
 import com.example.unoapp.Networking.WifiDirectBroadcastReceiver;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class ServerBrowsing extends AppCompatActivity implements ServerHolder.LobbyNotification, WifiP2pManager.PeerListListener, WifiP2pManager.ConnectionInfoListener, PeerAdapter.RequestConnectionToDevice {
+    public static final String PLAYERS = "players";
+    public static final String HAND = "hand";
+    public static final String FIRST_CARD = "first_card";
+
     @Override
-    public void gameBegun() {
+    public void gameBegun(ArrayList<Players> players, ArrayList<CardModel> hand, CardModel firstCard) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Gson gson = new Gson();
                 Intent gameIntent = new Intent(ServerBrowsing.this, GameActivity.class);
+                gameIntent.putExtra(PLAYERS, gson.toJson(players));
+                gameIntent.putExtra(HAND, gson.toJson(hand));
+                gameIntent.putExtra(FIRST_CARD, gson.toJson(firstCard));
                 startActivity(gameIntent);
             }
         });
     }
 
     @Override
-    public void isServerHoster(boolean isHoster) {
+    public void connectionRefused() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (isHoster) {
-                    btnBegin.setVisibility(View.VISIBLE);
-                } else {
-                    btnBegin.setVisibility(View.GONE);
-                }
+                networkWrapper.disconnectFromGroup();
+                networkWrapper.discover();
+                Toast.makeText(ServerBrowsing.this, "Connection Refused. Try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
-    public void providedPlayerDetailsResult(ArrayList<String> players) {
-        Log.d(TAG, "providedPlayerDetailsResult: " + players);
+    public void providedPlayerDetailsResult(ArrayList<String> players, boolean isHoster) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 adapterLobby.setLobbyPlayers(players);
                 txtNumberOfPlayers.setText(String.valueOf(players.size() + 1) + "/3");
-                if (players.size() == 0) {
-                    btnBegin.setVisibility(View.GONE);
+                if (isHoster) {
+                    if (players.size() == 0) {
+                        btnBegin.setVisibility(View.GONE);
+                    } else {
+                        btnBegin.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });
@@ -85,10 +98,11 @@ public class ServerBrowsing extends AppCompatActivity implements ServerHolder.Lo
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-        networkWrapper.setPort(Integer.parseInt(edtTxtPort.getText().toString()));
-        networkWrapper.setNickName(edtTxtNickname.getText().toString());
+        networkWrapper.setPort(Integer.parseInt(edtTxtPort.getText().toString().trim()));
+        networkWrapper.setNickName(edtTxtNickname.getText().toString().trim());
         networkWrapper.handleServerToClientCommunication(info, this);
     }
+
     private static final String TAG = "ServerBrowsing";
 
     private TextView txtNumberOfPlayers;
@@ -103,6 +117,7 @@ public class ServerBrowsing extends AppCompatActivity implements ServerHolder.Lo
     private WifiP2pManager.Channel channel;
     private WifiDirectBroadcastReceiver broadcastReceiver;
     private IntentFilter intentFilter;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +127,8 @@ public class ServerBrowsing extends AppCompatActivity implements ServerHolder.Lo
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
 
-        networkWrapper = new NetworkWrapper(manager, channel);
+        NetworkWrapper.initManager(manager, channel);
+        networkWrapper = NetworkWrapper.getManager();
         broadcastReceiver = new WifiDirectBroadcastReceiver(this, networkWrapper);
 
         intentFilter = new IntentFilter();

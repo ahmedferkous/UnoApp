@@ -28,11 +28,11 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Log.d(TAG, "onReceive: " + action);
-        switch(action) {
+        switch (action) {
             case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION:
                 //check to see if Wi-Fi is enabled and notify appropriate activity.
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-                switch(state) {
+                switch (state) {
                     case WifiP2pManager.WIFI_P2P_STATE_ENABLED:
                         Log.d(TAG, "onReceive: P2P Enabled");
                         break;
