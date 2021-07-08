@@ -21,6 +21,7 @@ import com.example.unoapp.Networking.WifiDirectBroadcastReceiver;
 
 import java.util.ArrayList;
 
+// TODO: 9/07/2021 Main activity screen needed. Implement permission functionality 
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
