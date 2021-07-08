@@ -88,7 +88,6 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
                     Log.d(TAG, "connect: Unsuccessful connection");
                     break;
                 default:
-                    // TODO: 31/05/2021 Handle server-side problem?
                     break;
             }
         }
@@ -98,7 +97,6 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
         return unique_id;
     }
 
-    // TODO: 31/05/2021 Create class extending IOException, to send message?
     @Override
     public void run() {
         try {

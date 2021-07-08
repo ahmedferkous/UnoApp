@@ -228,13 +228,11 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         }
     }
 
-    // TODO: 31/05/2021 Handle server "starting"?
     @Override
     public void run() {
         try {
             listen();
         } catch (IOException e) {
-            Log.d(TAG, "run: SERVER ??");
             e.printStackTrace();
         }
     }

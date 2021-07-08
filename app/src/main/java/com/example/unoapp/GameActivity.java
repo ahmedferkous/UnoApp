@@ -66,7 +66,6 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         });
     }
 
-    // TODO: 8/07/2021 fix this ugly shit 
     @Override
     public void reversalChange() {
         runOnUiThread(new Runnable() {
@@ -214,7 +213,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         initViews();
-
+        // TODO: 9/07/2021 Fix the random crashing 
         NetworkWrapper.getManager().setContext(this);
 
         Intent incomingIntent = getIntent();
