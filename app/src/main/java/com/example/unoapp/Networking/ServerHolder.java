@@ -1,43 +1,28 @@
 package com.example.unoapp.Networking;
 
 import android.content.Context;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.GameLogic.GameInstance;
+import com.example.unoapp.GameLogic.PlayerInstance;
 import com.example.unoapp.GameLogic.Players;
-import com.example.unoapp.MainActivity;
-import com.example.unoapp.ServerBrowsing;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Base64;
-
-import javax.json.JsonValue;
 
 public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, NetworkWrapper.GameStatus {
     public interface LobbyNotification {
         void providedPlayerDetailsResult(ArrayList<String> players, boolean isHoster);
 
-        void gameBegun(ArrayList<Players> players, ArrayList<CardModel> hand, CardModel firstCard);
+        void gameBegun(ArrayList<Players> players, ArrayList<CardModel> hand, CardModel firstCard, PlayerInstance instance);
 
         void connectionRefused();
     }

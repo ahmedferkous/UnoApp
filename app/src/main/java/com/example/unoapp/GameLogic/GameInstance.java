@@ -189,17 +189,23 @@ public class GameInstance {
             ArrayList<CardModel> hand = new ArrayList<>();
             hand = PlayerInstance.initHand();
 
-            ArrayList<Players> players = new ArrayList<>(server.getPlayers().size());
+            ArrayList<Players> playersCopy = new ArrayList<>(server.getPlayers().size());
             for (Players p : server.getPlayers()) {
                 if (!(p.getUser_id() == server.getServer_id())) {
-                    players.add(p);
+                    playersCopy.add(p);
                 }
             }
 
-            server.getLobbyNotification().gameBegun(players, hand, cardStack.peek());
-            // TODO: 14/06/2021 Fix
-            //while(gameRunning) {
-            //new LivePlayer(players.get(playerIndexTurn), this).start();
+            server.getLobbyNotification().gameBegun(playersCopy, hand, cardStack.peek(), null);
+            try {
+                for (int i = 0; i < server.getPlayers().size(); i++) {
+                    ServerHolder.decipherMessage((DataInputStream) server.getClientList().get(i).getSocket().getInputStream());
+                }
+                new LivePlayer(players.get(playerIndexTurn), this).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //}
         }
 

@@ -78,23 +78,14 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/txtRedraw"
+        android:id="@+id/txtTimeLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/recViewCards"
         android:layout_marginLeft="20dp"
-        android:text="Redraw"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/txtReverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/recViewCards"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/txtRedraw"
-        android:text="Reverse"
-        android:textSize="18sp" />
+        android:text="15"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
 
 </RelativeLayout>

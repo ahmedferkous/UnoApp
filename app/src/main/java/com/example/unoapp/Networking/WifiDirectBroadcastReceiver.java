@@ -6,19 +6,18 @@ import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
-import com.example.unoapp.MainActivity;
-import com.example.unoapp.ServerBrowsing;
+import com.example.unoapp.ServerBrowsingActivity;
 
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "WifiDirectBroadcastRece";
     private NetworkWrapper networkWrapper;
-    private ServerBrowsing activity;
+    private ServerBrowsingActivity activity;
 
     public WifiDirectBroadcastReceiver() {
 
     }
 
-    public WifiDirectBroadcastReceiver(ServerBrowsing activity, NetworkWrapper networkWrapper) {
+    public WifiDirectBroadcastReceiver(ServerBrowsingActivity activity, NetworkWrapper networkWrapper) {
         super();
         this.networkWrapper = networkWrapper;
         this.activity = activity;

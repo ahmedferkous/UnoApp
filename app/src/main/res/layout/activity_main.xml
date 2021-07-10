@@ -7,53 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/edtTxtPort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/waitingRelLayout"
-        android:layout_centerHorizontal="true"
-        android:text="7775" />
 
-
-    <RelativeLayout
-        android:id="@+id/waitingRelLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
-
-        <TextView
-            android:id="@+id/txtReceive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Waiting for responses..." />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/txtReceive"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp" />
-
-    </RelativeLayout>
-
-    <Button
-        android:id="@+id/btnRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/waitingRelLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:text="Refresh" />
-
-    <Button
-        android:id="@+id/btnBegin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btnRefresh"
-        android:layout_centerHorizontal="true"
-        android:text="Begin" />
 
 
 </RelativeLayout>

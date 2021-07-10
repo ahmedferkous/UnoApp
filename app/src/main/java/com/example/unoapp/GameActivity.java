@@ -6,10 +6,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -21,20 +22,34 @@ import android.widget.TextView;
 import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.CardFiles.CardsAdapter;
 import com.example.unoapp.CardFiles.Deck;
+import com.example.unoapp.GameLogic.PlayerInstance;
 import com.example.unoapp.GameLogic.Players;
 import com.example.unoapp.GameLogic.PlayersAdapter;
 import com.example.unoapp.Networking.NetworkWrapper;
-import com.example.unoapp.Networking.UnoClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class GameActivity extends AppCompatActivity implements NetworkWrapper.UpdateCallback {
+// TODO: 10/07/2021 fix weird startup times for the server
+public class GameActivity extends AppCompatActivity implements NetworkWrapper.UpdateCallback, CardsAdapter.onPlacedCard {
+    public interface OnLoad {
+        void onCompletedTurn(CardModel placedCard, boolean drewCard);
+        void onLoaded(NetworkWrapper.UpdateCallback UIcallback);
+    }
+    public static final String EXITED_GAME = "exited_game";
     public static final String ANTI = "anti";
     public static final String CLOCK = "clock";
+    private OnLoad onLoad;
     private int seconds;
+
+    @Override
+    public void placedCardResult(CardModel placedCard) {
+        onLoad.onCompletedTurn(placedCard, false);
+
+    }
 
     @Override
     public void setPlayers(ArrayList<Players> players) {
@@ -47,11 +62,29 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
     }
 
     @Override
-    public void setHand(ArrayList<CardModel> hand) {
+    public void setHand(ArrayList<CardModel> hand, boolean playerTurn) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 cardsAdapter.setCards(hand);
+                if (playerTurn) {
+                    imgViewStackCards.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AlertDialog builder = new AlertDialog.Builder(GameActivity.this)
+                                    .setTitle("Draw A Card?")
+                                    .setNegativeButton("No", null)
+                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            onLoad.onCompletedTurn(Deck.drawCard(), true);
+                                        }
+                                    }).create();
+                            builder.show();
+
+                        }
+                    });
+                }
             }
         });
     }
@@ -205,7 +238,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
     private RecyclerView recViewPlayers, recViewCards;
     private CardsAdapter cardsAdapter;
     private PlayersAdapter playersAdapter;
-    private TextView txtTimeElapsed;
+    private TextView txtTimeElapsed, txtTimeLeft;
     private Animation aniRotateClk, aniRotateAntiClk;
 
     @Override
@@ -213,26 +246,28 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         initViews();
-        // TODO: 9/07/2021 Fix the random crashing 
-        NetworkWrapper.getManager().setContext(this);
 
         Intent incomingIntent = getIntent();
         if (incomingIntent != null) {
             Gson gson = new Gson();
-            ArrayList<Players> players = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsing.PLAYERS), new TypeToken<ArrayList<Players>>() {
+            ArrayList<Players> players = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsingActivity.PLAYERS), new TypeToken<ArrayList<Players>>() {
             }.getType());
-            ArrayList<CardModel> hand = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsing.HAND), new TypeToken<ArrayList<CardModel>>() {
+            ArrayList<CardModel> hand = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsingActivity.HAND), new TypeToken<ArrayList<CardModel>>() {
             }.getType());
-            CardModel firstCard = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsing.FIRST_CARD), new TypeToken<CardModel>() {
+            CardModel firstCard = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsingActivity.FIRST_CARD), new TypeToken<CardModel>() {
             }.getType());
-            Log.d(TAG, "onCreate: players " + players);
-            Log.d(TAG, "onCreate: hand " + hand);
-            Log.d(TAG, "onCreate: first card " + firstCard);
+            PlayerInstance playerInstance = PlayerInstanceContainer.getInstance();
             if (players != null && hand != null && firstCard != null) {
                 playersAdapter.setPlayers(players);
                 cardsAdapter.setCards(hand);
                 imgViewPlacedCard.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, CardsAdapter.getImage(firstCard)));
                 colorChange(firstCard.getColor());
+                if (playerInstance != null) {
+                    onLoad = playerInstance;
+                    NetworkWrapper.UpdateCallback UIcallback = (NetworkWrapper.UpdateCallback) this;
+                    onLoad.onLoaded(UIcallback);
+                    Log.d(TAG, "onCreate: Successful");
+                } 
             }
         } else {
             Log.d(TAG, "onCreate: Nulled :(");
@@ -346,6 +381,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         recViewPlayers = findViewById(R.id.recViewPlayers);
         recViewCards = findViewById(R.id.recViewCards);
         txtTimeElapsed = findViewById(R.id.txtTimeElapsed);
+        txtTimeLeft = findViewById(R.id.txtTimeLeft);
         aniRotateClk = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
         aniRotateAntiClk = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
         recViewCards.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
@@ -365,8 +401,8 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        NetworkWrapper.getManager().disconnectFromGroup();
-                        Intent serverBrowserIntent = new Intent(GameActivity.this, ServerBrowsing.class);
+                        Intent serverBrowserIntent = new Intent(GameActivity.this, ServerBrowsingActivity.class);
+                        serverBrowserIntent.putExtra(EXITED_GAME, true);
                         startActivity(serverBrowserIntent);
                     }
                 });

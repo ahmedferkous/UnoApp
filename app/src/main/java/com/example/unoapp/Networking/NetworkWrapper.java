@@ -10,9 +10,9 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 
 import com.example.unoapp.CardFiles.CardModel;
+import com.example.unoapp.GameLogic.PlayerInstance;
 import com.example.unoapp.GameLogic.Players;
-import com.example.unoapp.MainActivity;
-import com.example.unoapp.ServerBrowsing;
+import com.example.unoapp.ServerBrowsingActivity;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ public class NetworkWrapper {
     public interface UpdateCallback {
         void setPlayers(ArrayList<Players> players);
 
-        void setHand(ArrayList<CardModel> hand);
+        void setHand(ArrayList<CardModel> hand, boolean playerTurn);
 
         void setPlacedCard(CardModel placedCard);
 
@@ -36,48 +36,16 @@ public class NetworkWrapper {
     }
 
     private static final String TAG = "ManagerWrapper";
-    private static NetworkWrapper instance;
-    private UpdateCallback updateCallback;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private GameStatus gameStatus;
     private ServerHolder serverHolder;
     private ClientHolder clientHolder;
-    private Context context;
     private boolean serverExists = false;
     private int port;
     private String nickName;
 
-    public static void initManager(WifiP2pManager manager, WifiP2pManager.Channel channel) {
-        if (instance == null) {
-            instance = new NetworkWrapper(manager, channel);
-        }
-    }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
-    public UpdateCallback getUpdateCallback() {
-        if (updateCallback == null && context != null) {
-            try {
-                updateCallback = (UpdateCallback) context;
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-            }
-        }
-        return updateCallback;
-    }
-
-    public static NetworkWrapper getManager() {
-        return instance;
-    }
-
-    private NetworkWrapper(WifiP2pManager manager, WifiP2pManager.Channel channel) {
+    public NetworkWrapper(WifiP2pManager manager, WifiP2pManager.Channel channel) {
         this.manager = manager;
         this.channel = channel;
     }
@@ -169,11 +137,11 @@ public class NetworkWrapper {
 
 
     @SuppressLint("MissingPermission")
-    public void requestPeers(ServerBrowsing activity) {
+    public void requestPeers(ServerBrowsingActivity activity) {
         manager.requestPeers(channel, activity);
     }
 
-    public void requestConnectionInfo(ServerBrowsing activity) {
+    public void requestConnectionInfo(ServerBrowsingActivity activity) {
         manager.requestConnectionInfo(channel, activity);
     }
 

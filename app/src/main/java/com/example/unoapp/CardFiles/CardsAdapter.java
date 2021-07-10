@@ -35,6 +35,15 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    private void removeCard(CardModel boundCard) {
+        cards.remove(boundCard);
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<CardModel> getCards() {
+        return cards;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,6 +71,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                                 public void onClick(DialogInterface dialog, int which) {
                                     try {
                                         placedCard = (onPlacedCard) context;
+                                        removeCard(boundCard);
                                         placedCard.placedCardResult(boundCard);
                                     } catch (ClassCastException e) {
                                         e.printStackTrace();
