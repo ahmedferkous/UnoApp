@@ -7,7 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnServerBrowser"
+            android:text="Server Browser"
+            android:textAllCaps="false"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnHowToPlay"
+            android:text="How To Play"
+            android:textAllCaps="false"
+            android:layout_toRightOf="@id/btnServerBrowser"
+            android:layout_marginLeft="10dp"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -49,10 +49,13 @@ public class ServerBrowsingActivity extends AppCompatActivity implements ServerH
                 gameIntent.putExtra(FIRST_CARD, gson.toJson(firstCard));
                 if (instance != null) {
                     // TODO: 10/07/2021 No no no! fix this ASAP!
-                    PlayerInstanceContainer.setInstance(instance);
+                    InstanceContainers.setPlayerInstance(instance);
+                } else {
+                    Log.d(TAG, "run: Null player instance");
                 }
                 //gameIntent.putExtra(PLAYER_INSTANCE, instance);
                 startActivity(gameIntent);
+
             }
         });
     }

@@ -6,11 +6,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +27,6 @@ import com.example.unoapp.Networking.NetworkWrapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -48,7 +45,6 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
     @Override
     public void placedCardResult(CardModel placedCard) {
         onLoad.onCompletedTurn(placedCard, false);
-
     }
 
     @Override
@@ -166,6 +162,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         });
     }
 
+    // TODO: 30/07/2021 Double check, clockwise/anticlockwise is incorrect at times 
     @Override
     public void colorChange(String color) {
         runOnUiThread(new Runnable() {
@@ -256,18 +253,20 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
             }.getType());
             CardModel firstCard = gson.fromJson(incomingIntent.getStringExtra(ServerBrowsingActivity.FIRST_CARD), new TypeToken<CardModel>() {
             }.getType());
-            PlayerInstance playerInstance = PlayerInstanceContainer.getInstance();
+            PlayerInstance playerInstance = InstanceContainers.getPlayerInstance();
             if (players != null && hand != null && firstCard != null) {
                 playersAdapter.setPlayers(players);
                 cardsAdapter.setCards(hand);
                 imgViewPlacedCard.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, CardsAdapter.getImage(firstCard)));
+                imgViewPlacedCard.setTooltipText(CLOCK + "," + firstCard.getColor());
                 colorChange(firstCard.getColor());
                 if (playerInstance != null) {
                     onLoad = playerInstance;
-                    NetworkWrapper.UpdateCallback UIcallback = (NetworkWrapper.UpdateCallback) this;
+                    NetworkWrapper.UpdateCallback UIcallback = this;
                     onLoad.onLoaded(UIcallback);
                     Log.d(TAG, "onCreate: Successful");
-                } 
+                }
+                Log.d(TAG, "onCreate: " + onLoad);
             }
         } else {
             Log.d(TAG, "onCreate: Nulled :(");
@@ -278,79 +277,6 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         }
 
         runTimer();
-        
-
-        /*
-        RecyclerView revViewCards = findViewById(R.id.recViewCards);
-        RecyclerView recViewPlayers = findViewById(R.id.recViewPlayers);
-        //Button btnRedraw = findViewById(R.id.btnRedraw);
-
-        revViewCards.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        recViewPlayers.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        CardsAdapter cardsAdapter = new CardsAdapter(this);
-        PlayersAdapter playersAdapter = new PlayersAdapter(this);
-        revViewCards.setAdapter(cardsAdapter);
-        recViewPlayers.setAdapter(playersAdapter);
-
-        ArrayList<UnoClient> players = new ArrayList<>();
-        players.add(new UnoClient("123456789012", true));
-        players.add(new UnoClient("123456789012", false));
-        playersAdapter.setPlayers(players);
-
-        ImageView imageRotation = findViewById(R.id.imageRotation);
-        TextView txtRedraw = findViewById(R.id.txtRedraw);
-        TextView txtReverse = findViewById(R.id.txtReverse);
-
-        Animation aniRotateClk = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_clockwise);
-        Animation aniRotateAntiClk = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_anticlockwise);
-        imageRotation.setAnimation(aniRotateClk);
-
-        txtRedraw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<CardModel> cards = new ArrayList<>();
-                for (int i = 0; i < 7; i++) {
-                    CardModel drewCard = Deck.drawCard();
-                    drewCard.setPlayable(true);
-                    cards.add(drewCard);
-                }
-                cardsAdapter.setCards(cards);
-            }
-        });
-
-        txtReverse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (imageRotation.getAnimation().equals(aniRotateClk)) {
-                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, R.drawable.anticlockwise_red));
-                    imageRotation.setAnimation(aniRotateAntiClk);
-                } else {
-                    imageRotation.setImageDrawable(AppCompatResources.getDrawable(GameActivity.this, R.drawable.clockwise_red));
-                    imageRotation.setAnimation(aniRotateClk);
-                }
-            }
-        });
-
-         */
-
-
-        /*
-        btnRedraw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<CardModel> cards = new ArrayList<>();
-                for (int i = 0; i < 7; i++) {
-                    CardModel drewCard = Deck.drawCard();
-                    drewCard.setPlayable(true);
-                    cards.add(drewCard);
-                }
-                cards.add(new CardModel(CardModel.TYPE_BACK));
-                cardsAdapter.setCards(cards);
-            }
-        });
-
-
-         */
     }
 
     private void runTimer() {
@@ -386,7 +312,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
         aniRotateAntiClk = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
         recViewCards.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         recViewPlayers.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        cardsAdapter = new CardsAdapter(this);
+        cardsAdapter = new CardsAdapter(this, getSupportFragmentManager());
         playersAdapter = new PlayersAdapter(this);
         recViewCards.setAdapter(cardsAdapter);
         recViewPlayers.setAdapter(playersAdapter);
@@ -402,6 +328,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent serverBrowserIntent = new Intent(GameActivity.this, ServerBrowsingActivity.class);
+                        serverBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         serverBrowserIntent.putExtra(EXITED_GAME, true);
                         startActivity(serverBrowserIntent);
                     }

@@ -81,6 +81,7 @@ public class GameInstance {
     private static class LivePlayer extends Thread {
         public interface onCompleteTurn {
             void onCompletedTurn(Stack<CardModel> cards, boolean stackedEvent, int numberOfStackedCards);
+            void onUncompletedTurn();
         }
 
         private final UnoClient player;
@@ -130,12 +131,28 @@ public class GameInstance {
                 }
             } catch (IOException e) {
                 onUserDisconnect.onUserDisconnectResult(player);
+                onCompleteTurn.onUncompletedTurn();
             }
         }
     }
 
     private class LiveGame extends Thread implements LivePlayer.onCompleteTurn {
         private int playerIndexTurn = 0;
+
+        @Override
+        public void onUncompletedTurn() {
+            players = server.getClientList();
+            if (players.size() > 1) {
+                if (playerIndexTurn >= players.size() - 1) {
+                    playerIndexTurn = 0;
+                } else {
+                    playerIndexTurn++;
+                }
+                new LivePlayer(players.get(playerIndexTurn), this).start();
+            } else {
+                endGame();
+            }
+        }
 
         @Override
         public void onCompletedTurn(Stack<CardModel> cards, boolean stackedEvent, int numberOfStackedCards) {
@@ -158,9 +175,6 @@ public class GameInstance {
                             playerIndexTurn += 2;
                         }
                         break;
-                    case CardModel.TYPE_COLOR_SWITCH:
-                    case CardModel.TYPE_PLUS_FOUR:
-                        server.broadcast(new Message(COLOR_CHANGE_EVENT, cardOnTop.getColor()));
                     case CardModel.TYPE_REVERSE:
                         Collections.reverse(players);
                         server.broadcast(new Message(UPDATE_PLAYERS, null));
@@ -195,16 +209,22 @@ public class GameInstance {
                     playersCopy.add(p);
                 }
             }
-
             server.getLobbyNotification().gameBegun(playersCopy, hand, cardStack.peek(), null);
-            try {
-                for (int i = 0; i < server.getPlayers().size(); i++) {
-                    ServerHolder.decipherMessage((DataInputStream) server.getClientList().get(i).getSocket().getInputStream());
+
+            UnoClient player = null;
+            for (int i = 0; i < players.size(); i++) {
+                try {
+                    player = players.get(i);
+                    DataInputStream in = new DataInputStream(player.getSocket().getInputStream());
+                    ServerHolder.decipherMessage(in);
+                } catch (IOException e) {
+                    onUserDisconnect.onUserDisconnectResult(player);
+                    players = server.getClientList();
+                    e.printStackTrace();
                 }
-                new LivePlayer(players.get(playerIndexTurn), this).start();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+            new LivePlayer(players.get(playerIndexTurn), this).start();
 
             //}
         }

@@ -38,7 +38,6 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         gameInstance.endGame();
     }
 
-
     @Override
     public void onUserDisconnectResult(UnoClient player) {
         try {

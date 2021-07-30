@@ -25,7 +25,6 @@ import java.util.Stack;
 public class PlayerInstance implements GameActivity.OnLoad {
     private static final String TAG = "PlayerInstance";
 
-    // TODO: 10/07/2021 Please fix
     @Override
     public void onLoaded(NetworkWrapper.UpdateCallback callback) {
         new Thread() {
@@ -38,7 +37,6 @@ public class PlayerInstance implements GameActivity.OnLoad {
         }.start();
     }
 
-    // TODO: 10/07/2021  please fix
     @Override
     public void onCompletedTurn(CardModel playedCard, boolean drewCard) {
         new Thread() {
@@ -135,13 +133,16 @@ public class PlayerInstance implements GameActivity.OnLoad {
                                 hand = initHand();
                                 placedCards = gson.fromJson(receivedMessage.getMessage(), cardType);
                                 lobbyNotification.gameBegun(playersList, hand, placedCards.peek(), PlayerInstance.this);
+                                Log.d(TAG, "run: Ran here");
                                 gameBegun = true;
                                 break;
                             case GameInstance.UPDATE_STACK:
                                 placedCards = gson.fromJson(receivedMessage.getMessage(), cardType);
                                 UIcallback.setPlacedCard(placedCards.peek());
+                                UIcallback.colorChange(placedCards.peek().getColor());
                                 Log.d(TAG, "run: Received Stack: " + placedCards.peek());
                                 break;
+                            // TODO: 30/07/2021 possibly redundant
                             case GameInstance.COLOR_CHANGE_EVENT:
                                 String color = receivedMessage.getMessage();
                                 UIcallback.colorChange(color);
@@ -149,6 +150,7 @@ public class PlayerInstance implements GameActivity.OnLoad {
                             case GameInstance.STACKED_RESULT:
                                 break;
                             case GameInstance.PLAYER_TURN:
+                                Log.d(TAG, "run: Player's Turn");
                                 setLegality(placedCards.peek());
                                 break;
                             default:

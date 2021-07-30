@@ -10,24 +10,36 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.unoapp.ColourDialog;
 import com.example.unoapp.R;
 
 import java.util.ArrayList;
 
-public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
+public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> implements ColourDialog.ColorChange {
     public interface onPlacedCard {
         void placedCardResult(CardModel placedCard);
     }
 
-    private ArrayList<CardModel> cards = new ArrayList<>();
-    private onPlacedCard placedCard;
-    private Context context;
+    @Override
+    public void colorChangeResult(CardModel boundCard, String color) {
+        boundCard.setColor(color);
+        removeCard(boundCard);
+        placedCard.placedCardResult(boundCard);
+    }
 
-    public CardsAdapter(Context context) {
+    private ArrayList<CardModel> cards = new ArrayList<>();
+    private final onPlacedCard placedCard;
+    private final FragmentManager fragmentManager;
+    private final Context context;
+
+    public CardsAdapter(Context context, FragmentManager fragmentManager) {
         this.context = context;
+        this.fragmentManager = fragmentManager;
+        placedCard = (onPlacedCard) context;
     }
 
     public void setCards(ArrayList<CardModel> cards) {
@@ -69,12 +81,12 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    try {
-                                        placedCard = (onPlacedCard) context;
+                                    if (boundCard.getType().equals(CardModel.TYPE_PLUS_FOUR) || boundCard.getType().equals(CardModel.TYPE_COLOR_SWITCH)) {
+                                        ColourDialog colourDialog = new ColourDialog(CardsAdapter.this, boundCard);
+                                        colourDialog.show(fragmentManager, "");
+                                    } else {
                                         removeCard(boundCard);
                                         placedCard.placedCardResult(boundCard);
-                                    } catch (ClassCastException e) {
-                                        e.printStackTrace();
                                     }
                                 }
                             }).create();
@@ -253,9 +265,35 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
                 }
                 break;
             case CardModel.TYPE_COLOR_SWITCH:
-                return R.drawable.colorswitch;
+                if (card.getColor() != null) {
+                    switch (card.getColor()) {
+                        case CardModel.COLOR_RED:
+                            return R.drawable.colorswitch_red;
+                        case CardModel.COLOR_YELLOW:
+                            return R.drawable.colorswitch_yellow;
+                        case CardModel.COLOR_BLUE:
+                            return R.drawable.colorswitch_blue;
+                        case CardModel.COLOR_GREEN:
+                            return R.drawable.colorswitch_green;
+                    }
+                } else {
+                    return R.drawable.colorswitch;
+                }
             case CardModel.TYPE_PLUS_FOUR:
-                return R.drawable.plusfour;
+                if (card.getColor() != null) {
+                    switch (card.getColor()) {
+                        case CardModel.COLOR_RED:
+                            return R.drawable.plusfour_red;
+                        case CardModel.COLOR_YELLOW:
+                            return R.drawable.plusfour_yellow;
+                        case CardModel.COLOR_BLUE:
+                            return R.drawable.plusfour_blue;
+                        case CardModel.COLOR_GREEN:
+                            return R.drawable.plusfour_green;
+                    }
+                } else {
+                    return R.drawable.plusfour;
+                }
             default:
                 return R.drawable.backcard;
         }
@@ -263,7 +301,7 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> 
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private RelativeLayout cardParent;
         private ImageView cardImage;
 
