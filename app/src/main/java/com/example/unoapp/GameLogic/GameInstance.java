@@ -157,7 +157,7 @@ public class GameInstance {
 
         @Override
         public void onCompletedTurn(Stack<CardModel> cards, boolean stackedEvent, int numberOfStackedCards) {
-            // TODO: 14/06/2021 Signal player drew a card if stack size didn't change
+            // TODO: 14/06/2021 Signal player drew a card if stack size didn't change (2 other players)
             // TODO: 14/06/2021 Come up with solutions for dealing with 'stacking' as well as color-switches
             if (gameRunning) {
                 if (!(cardStack.size() == cards.size())) {
@@ -194,6 +194,8 @@ public class GameInstance {
                 } else {
                     new LivePlayer(players.get(playerIndexTurn), this).start();
                 }
+            } else {
+                Log.d(TAG, "onCompletedTurn: Game ended");
             }
         }
 

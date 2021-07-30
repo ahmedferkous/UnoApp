@@ -56,6 +56,8 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
             }
             if (listening) {
                 lobbyNotification.providedPlayerDetailsResult(GameInstance.getListOfPlayers(clientList), true);
+            } else {
+
             }
             Log.d(TAG, "onUserDisconnectResult: disconnection ");
             broadcast(new Message(DISCONNECTION_OF_CLIENT, gson.toJson(players)));
@@ -165,7 +167,6 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         return lobbyNotification;
     }
 
-
     private void listen() throws IOException {
         listening = true;
         ServerSocket serverSocket = new ServerSocket(port);
@@ -217,6 +218,7 @@ public class ServerHolder implements Runnable, GameInstance.OnUserDisconnect, Ne
         try {
             listen();
         } catch (IOException e) {
+            Log.d(TAG, "run: Error occured here");
             e.printStackTrace();
         }
     }

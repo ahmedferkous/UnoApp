@@ -59,7 +59,7 @@ public class PlayerInstance implements GameActivity.OnLoad {
 
 
     public interface onServerStatus {
-        void onDisconnection(boolean isGameRunning);
+        void onDisconnection(boolean isGameRunning, NetworkWrapper.UpdateCallback callback);
     }
 
     private ClientHolder client;
@@ -152,7 +152,11 @@ public class PlayerInstance implements GameActivity.OnLoad {
                         }
                     } catch (IOException e) {
                         serverConnection = false;
-                        onServerStatus.onDisconnection(gameBegun);
+                        if (gameBegun) {
+                            onServerStatus.onDisconnection(true, UIcallback);
+                        } else {
+                            onServerStatus.onDisconnection(false, null);
+                        }
                     }
                 }
             }

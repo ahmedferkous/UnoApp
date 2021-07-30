@@ -33,6 +33,8 @@ public class NetworkWrapper {
         void reversalChange();
 
         void colorChange(String color);
+
+        void disconnection();
     }
 
     private static final String TAG = "ManagerWrapper";
@@ -109,6 +111,8 @@ public class NetworkWrapper {
         return devices;
     }
 
+    // TODO: 30/07/2021 Fix EADDRINUSE (address already in use)
+    // TODO: 30/07/2021 Fix unnecessary starting of new server sockets + client sockets
     public void handleServerToClientCommunication(WifiP2pInfo info, Context context) {
         if (null != info) {
             Log.d(TAG, "onConnectionInfoAvailable: " + info);

@@ -32,13 +32,14 @@ import static com.example.unoapp.Networking.ServerHolder.decipherMessage;
 
 public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
     @Override
-    public void onDisconnection(boolean isGameRunning) {
+    public void onDisconnection(boolean isGameRunning, NetworkWrapper.UpdateCallback callback) {
         if (!isGameRunning) {
             lobbyNotification.providedPlayerDetailsResult(new ArrayList<>(), false);
         } else {
-            // TODO: 7/07/2021 show notification of disconnection 
+            callback.disconnection();
         }
     }
+
 
     private static final String TAG = "ClientHolder";
     private ServerHolder.LobbyNotification lobbyNotification;
@@ -107,5 +108,4 @@ public class ClientHolder implements Runnable, PlayerInstance.onServerStatus {
             e.printStackTrace();
         }
     }
-
 }

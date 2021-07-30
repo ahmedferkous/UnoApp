@@ -35,7 +35,6 @@ public class ServerBrowsingActivity extends AppCompatActivity implements ServerH
     public static final String PLAYERS = "players";
     public static final String HAND = "hand";
     public static final String FIRST_CARD = "first_card";
-    public static final String PLAYER_INSTANCE = "player_instance";
 
     @Override
     public void gameBegun(ArrayList<Players> players, ArrayList<CardModel> hand, CardModel firstCard, PlayerInstance instance) {
@@ -48,12 +47,10 @@ public class ServerBrowsingActivity extends AppCompatActivity implements ServerH
                 gameIntent.putExtra(HAND, gson.toJson(hand));
                 gameIntent.putExtra(FIRST_CARD, gson.toJson(firstCard));
                 if (instance != null) {
-                    // TODO: 10/07/2021 No no no! fix this ASAP!
                     InstanceContainers.setPlayerInstance(instance);
                 } else {
                     Log.d(TAG, "run: Null player instance");
                 }
-                //gameIntent.putExtra(PLAYER_INSTANCE, instance);
                 startActivity(gameIntent);
 
             }

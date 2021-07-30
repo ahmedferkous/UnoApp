@@ -16,6 +16,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.unoapp.CardFiles.CardModel;
 import com.example.unoapp.CardFiles.CardsAdapter;
@@ -30,7 +31,6 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.Locale;
 
-// TODO: 10/07/2021 fix weird startup times for the server
 public class GameActivity extends AppCompatActivity implements NetworkWrapper.UpdateCallback, CardsAdapter.onPlacedCard {
     public interface OnLoad {
         void onCompletedTurn(CardModel placedCard, boolean drewCard);
@@ -41,6 +41,17 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
     public static final String CLOCK = "clock";
     private OnLoad onLoad;
     private int seconds;
+
+    @Override
+    public void disconnection() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(GameActivity.this, "You have been disconnected from the server.", Toast.LENGTH_SHORT).show();
+                disconnect();
+            }
+        });
+    }
 
     @Override
     public void placedCardResult(CardModel placedCard) {
@@ -161,8 +172,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
             }
         });
     }
-
-    // TODO: 30/07/2021 Double check, clockwise/anticlockwise is incorrect at times 
+    
     @Override
     public void colorChange(String color) {
         runOnUiThread(new Runnable() {
@@ -231,6 +241,7 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
     }
 
     private static final String TAG = "PlaceholderActivity";
+    private boolean isServerHost = false;
     private ImageView imgViewStackCards, imgViewPlacedCard, imgViewRotation;
     private RecyclerView recViewPlayers, recViewCards;
     private CardsAdapter cardsAdapter;
@@ -265,6 +276,8 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
                     NetworkWrapper.UpdateCallback UIcallback = this;
                     onLoad.onLoaded(UIcallback);
                     Log.d(TAG, "onCreate: Successful");
+                } else {
+                    isServerHost = true;
                 }
                 Log.d(TAG, "onCreate: " + onLoad);
             }
@@ -327,12 +340,16 @@ public class GameActivity extends AppCompatActivity implements NetworkWrapper.Up
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent serverBrowserIntent = new Intent(GameActivity.this, ServerBrowsingActivity.class);
-                        serverBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        serverBrowserIntent.putExtra(EXITED_GAME, true);
-                        startActivity(serverBrowserIntent);
+                        disconnect();
                     }
                 });
         builder.create().show();
+    }
+    
+    private void disconnect() {
+        Intent serverBrowserIntent = new Intent(GameActivity.this, ServerBrowsingActivity.class);
+        serverBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        serverBrowserIntent.putExtra(EXITED_GAME, true);
+        startActivity(serverBrowserIntent);
     }
 }
