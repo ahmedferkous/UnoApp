@@ -29,7 +29,6 @@ public class GameInstance {
     public static final String UPDATE_PLAYERS = "update_players_list";
     public static final String PLAYER_TURN = "players_turn";
     public static final String CLAIMED_WINNER = "winner_of_game";
-    public static final String COLOR_CHANGE_EVENT = "color_changed_event";
     public static final String STACKED_RESULT = "player_stacked_plus";
     public static final String STACKED_NUMBER = "stacked_number";
     public static final String TURN_FINISHED = "finished_turn";
@@ -141,16 +140,18 @@ public class GameInstance {
 
         @Override
         public void onUncompletedTurn() {
-            players = server.getClientList();
-            if (players.size() > 1) {
-                if (playerIndexTurn >= players.size() - 1) {
-                    playerIndexTurn = 0;
+            if (gameRunning) {
+                players = server.getClientList();
+                if (players.size() > 1) {
+                    if (playerIndexTurn >= players.size() - 1) {
+                        playerIndexTurn = 0;
+                    } else {
+                        playerIndexTurn++;
+                    }
+                    new LivePlayer(players.get(playerIndexTurn), this).start();
                 } else {
-                    playerIndexTurn++;
+                    endGame();
                 }
-                new LivePlayer(players.get(playerIndexTurn), this).start();
-            } else {
-                endGame();
             }
         }
 
@@ -158,50 +159,48 @@ public class GameInstance {
         public void onCompletedTurn(Stack<CardModel> cards, boolean stackedEvent, int numberOfStackedCards) {
             // TODO: 14/06/2021 Signal player drew a card if stack size didn't change
             // TODO: 14/06/2021 Come up with solutions for dealing with 'stacking' as well as color-switches
+            if (gameRunning) {
+                if (!(cardStack.size() == cards.size())) {
+                    cardStack = cards;
+                    server.broadcast(new Message(UPDATE_STACK, gson.toJson(cards)));
 
-            if (!(cardStack.size() == cards.size())) {
-                cardStack = cards;
-                server.broadcast(new Message(UPDATE_STACK, gson.toJson(cards)));
+                    CardModel cardOnTop = cardStack.peek();
 
-                CardModel cardOnTop = cardStack.peek();
+                    switch (cardOnTop.getType()) {
+                        case CardModel.TYPE_SKIP:
+                            if (playerIndexTurn == players.size() - 1) {
+                                playerIndexTurn = 1;
+                            } else if (playerIndexTurn == players.size() - 2) {
+                                playerIndexTurn = 0;
+                            } else {
+                                playerIndexTurn += 2;
+                            }
+                            break;
+                        case CardModel.TYPE_REVERSE:
+                            Collections.reverse(players);
+                            server.broadcast(new Message(UPDATE_PLAYERS, null));
+                        default:
+                            if (playerIndexTurn == players.size() - 1) {
+                                playerIndexTurn = 0;
+                            } else {
+                                playerIndexTurn++;
+                            }
+                            break;
+                    }
+                }
 
-                switch (cardOnTop.getType()) {
-                    case CardModel.TYPE_SKIP:
-                        if (playerIndexTurn == players.size() - 1) {
-                            playerIndexTurn = 1;
-                        } else if (playerIndexTurn == players.size() - 2) {
-                            playerIndexTurn = 0;
-                        } else {
-                            playerIndexTurn += 2;
-                        }
-                        break;
-                    case CardModel.TYPE_REVERSE:
-                        Collections.reverse(players);
-                        server.broadcast(new Message(UPDATE_PLAYERS, null));
-                    default:
-                        if (playerIndexTurn == players.size() - 1) {
-                            playerIndexTurn = 0;
-                        } else {
-                            playerIndexTurn++;
-                        }
-                        break;
+                if (stackedEvent) {
+                    new LivePlayer(players.get(playerIndexTurn), this, new Message(STACKED_RESULT, String.valueOf(numberOfStackedCards))).start();
+                } else {
+                    new LivePlayer(players.get(playerIndexTurn), this).start();
                 }
             }
-
-            if (stackedEvent) {
-                new LivePlayer(players.get(playerIndexTurn), this, new Message(STACKED_RESULT, String.valueOf(numberOfStackedCards))).start();
-            } else {
-                new LivePlayer(players.get(playerIndexTurn), this).start();
-            }
-
         }
 
         @Override
         public void run() {
             server.broadcast(new Message(GAME_BEGIN, gson.toJson(cardStack)));
-            //temp solution for testing purposes
-            ArrayList<CardModel> hand = new ArrayList<>();
-            hand = PlayerInstance.initHand();
+            ArrayList<CardModel> hand = PlayerInstance.initHand();
 
             ArrayList<Players> playersCopy = new ArrayList<>(server.getPlayers().size());
             for (Players p : server.getPlayers()) {

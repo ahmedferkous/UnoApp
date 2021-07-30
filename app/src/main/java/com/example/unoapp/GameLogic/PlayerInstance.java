@@ -99,7 +99,6 @@ public class PlayerInstance implements GameActivity.OnLoad {
         new Thread() {
             boolean serverConnection = true;
 
-            // TODO: 8/07/2021 implement functionality with networkwrapper timings (send confirmation to server when players are all ready to begin)
             @Override
             public void run() {
                 while (serverConnection) {
@@ -141,11 +140,6 @@ public class PlayerInstance implements GameActivity.OnLoad {
                                 UIcallback.setPlacedCard(placedCards.peek());
                                 UIcallback.colorChange(placedCards.peek().getColor());
                                 Log.d(TAG, "run: Received Stack: " + placedCards.peek());
-                                break;
-                            // TODO: 30/07/2021 possibly redundant
-                            case GameInstance.COLOR_CHANGE_EVENT:
-                                String color = receivedMessage.getMessage();
-                                UIcallback.colorChange(color);
                                 break;
                             case GameInstance.STACKED_RESULT:
                                 break;
